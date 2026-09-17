@@ -16,11 +16,22 @@ Turn your webcam into a computer-vision playground: 54 video filters, 18 facial 
 
 ## Demo
 
-<!-- TODO: replace with assets/demo.gif after recording the hero GIF -->
+![MirrorLab cycling through sketch, cartoon, thermal, neon, comic, VHS, hologram, cyberpunk and glitch filters over a detected face, with sunglasses and a crown tracked to the head, and the HUD reporting 31 FPS, "Happy 81%" and the active filter](assets/demo.gif)
 
-*The hero GIF should show one uninterrupted take: a neutral face, then a smile lighting up the expression badge, a peace sign switching the filter to `cartoon`, a swipe changing the preset, and a thumbs-up firing a snapshot — with the hold-to-confirm ring filling before the action lands. Record it with `mirrorlab run --filter cartoon`, press `r`, perform the sequence, press `r` again, and the MP4 and GIF land in `captures/`.*
+*Every frame above comes from the real pipeline — the face is detected, the expression is read
+from blendshapes, the sunglasses and crown are anchored to the eye line, and the HUD is the
+one you get at runtime. Regenerate it yourself with `mirrorlab gallery` for a still contact
+sheet of all 54 filters.*
 
-There is also a **browser demo** with no install at all: **[mirrorlab-demo.vercel.app](https://mirrorlab-demo.vercel.app)**. It runs the vision models in your browser with WebAssembly and WebGL. Your camera stream never leaves the page.
+**Or skip the install entirely:** **[mirrorlab-demo.vercel.app](https://mirrorlab-demo.vercel.app)**
+runs the same perception ideas in your browser with WebAssembly and WebGL. Your camera stream
+never leaves the page.
+
+### Gallery
+
+![A contact sheet of all 54 filters applied to the same frame](assets/filter-gallery.jpg)
+
+*All 54 filters, rendered by `mirrorlab gallery`.*
 
 ---
 

@@ -16,11 +16,22 @@ Convierte tu webcam en un laboratorio de visión artificial: 54 filtros de víde
 
 ## Demo
 
-<!-- TODO: replace with assets/demo.gif after recording the hero GIF -->
+![MirrorLab recorriendo los filtros sketch, cartoon, thermal, neon, comic, VHS, hologram, cyberpunk y glitch sobre una cara detectada, con gafas de sol y una corona ancladas a la cabeza, y el HUD mostrando 31 FPS, "Happy 81%" y el filtro activo](assets/demo.gif)
 
-*El GIF principal debería ser una toma continua sin cortes: una cara neutra, luego una sonrisa que enciende la etiqueta de expresión, un signo de victoria que cambia el filtro a `cartoon`, un deslizamiento que cambia el preset y un pulgar arriba que dispara una captura — con el anillo de confirmación llenándose antes de que se ejecute la acción. Grábalo con `mirrorlab run --filter cartoon`, pulsa `r`, haz la secuencia, vuelve a pulsar `r` y tendrás el MP4 y el GIF en `captures/`.*
+*Cada fotograma sale del pipeline real: la cara se detecta, la expresión se lee de los
+blendshapes, las gafas y la corona se anclan a la línea de los ojos, y el HUD es el mismo que
+verás en ejecución. Puedes regenerarlo tú mismo; `mirrorlab gallery` produce una hoja de
+contacto fija con los 54 filtros.*
 
-También hay una **demo en el navegador** que no requiere instalar nada: **[mirrorlab-demo.vercel.app](https://mirrorlab-demo.vercel.app)**. Ejecuta los modelos de visión dentro de tu navegador con WebAssembly y WebGL. Tu cámara nunca sale de la página.
+**O sáltate la instalación:** **[mirrorlab-demo.vercel.app](https://mirrorlab-demo.vercel.app)**
+ejecuta las mismas ideas de percepción en tu navegador con WebAssembly y WebGL. Tu cámara
+nunca sale de la página.
+
+### Galería
+
+![Hoja de contacto con los 54 filtros aplicados al mismo fotograma](assets/filter-gallery.jpg)
+
+*Los 54 filtros, renderizados por `mirrorlab gallery`.*
 
 ---
 
