@@ -188,3 +188,15 @@ install, and do not commit model binaries or third-party artwork. Both are check
 
 *This document is a good-faith inventory, not legal advice. If a licence question matters to
 your business, read the upstream licence texts and talk to a lawyer.*
+
+---
+
+## Model weights are not redistributed
+
+MediaPipe model bundles (`.task` / `.tflite`) are **not** distributed with this project.
+MirrorLab downloads them on first run into a local cache, and they remain governed by their
+own model cards — see the [MediaPipe solutions documentation](https://ai.google.dev/edge/mediapipe/solutions/guide).
+Apache-2.0 covers the MediaPipe *code*; it does not automatically cover the *weights*.
+
+If you fork MirrorLab and vendor the models into your own distribution, you take on that
+review yourself.
