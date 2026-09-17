@@ -1,0 +1,86 @@
+name: 🐛 Bug report
+description: Something broke, crashed, or behaved differently from what the docs say.
+title: "[Bug]: "
+labels: ["bug", "needs triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file a report. The two things that make a
+        bug report instantly actionable are the output of `mirrorlab doctor`
+        and the exact command you ran.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you expect, and what happened instead?
+      placeholder: "I ran `mirrorlab run --filter cartoon` and the window opened but stayed black."
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. `pip install -e ".[dev]"`
+        2. `mirrorlab run --effect dog`
+        3. ...
+    validations:
+      required: true
+  - type: input
+    id: command
+    attributes:
+      label: The exact command you ran
+      placeholder: "mirrorlab run --camera 1 --filter sketch --no-hands"
+    validations:
+      required: true
+  - type: textarea
+    id: doctor
+    attributes:
+      label: Output of `mirrorlab doctor`
+      description: This captures your OS, Python, OpenCV, MediaPipe and model status in one paste.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: traceback
+    attributes:
+      label: Full error output
+      description: Re-run with `-v` for debug logs. Paste the whole traceback, not just the last line.
+      render: shell
+    validations:
+      required: false
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - macOS (Apple Silicon)
+        - macOS (Intel)
+        - Windows 11
+        - Windows 10
+        - Linux (Ubuntu/Debian)
+        - Linux (other)
+        - Docker / WSL2
+    validations:
+      required: true
+  - type: dropdown
+    id: install
+    attributes:
+      label: How did you install it?
+      options:
+        - "git clone + pip install -e ."
+        - "pip install mirrorlab (PyPI)"
+        - "Docker"
+        - "Other (explain below)"
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I searched existing issues and this is not a duplicate.
+          required: true
+        - label: I am running the pinned dependency set from the README troubleshooting section.
+          required: false

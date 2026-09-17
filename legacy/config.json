@@ -1,0 +1,8 @@
+{
+  "image_dir": "images",
+  "display_width": 1200,
+  "display_height": 700,
+  "min_detection_confidence": 0.5,
+  "min_tracking_confidence": 0.5,
+  "smooth_emotion_history": 5
+}

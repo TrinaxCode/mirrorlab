@@ -1,0 +1,96 @@
+# ---------------------------------------------------------------------------
+# Python
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+.python-version
+
+# Test / lint caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+.tox/
+.nox/
+
+# ---------------------------------------------------------------------------
+# MirrorLab runtime output
+# ---------------------------------------------------------------------------
+# Model bundles are downloaded on first run, never committed (see
+# src/mirrorlab/detectors/models.py). Keeping them out of git keeps clones fast
+# and avoids redistributing weights whose terms live in their model cards.
+models/
+src/mirrorlab/data/models/*.task
+src/mirrorlab/data/models/*.tflite
+src/mirrorlab/data/models/*.onnx
+
+# Captures, clips and statistics produced by the app itself
+captures/
+*.mp4
+*.avi
+*.mov
+!web/**/*.mp4
+
+# A local config is a personal file; only the defaults belong in git.
+mirrorlab.json
+mirrorlab.yaml
+mirrorlab.yml
+
+# ---------------------------------------------------------------------------
+# Node / web
+# ---------------------------------------------------------------------------
+node_modules/
+web/node_modules/
+web/dist/
+web/.vite/
+web/.vercel/
+.vercel/
+.pnpm-store/
+*.tsbuildinfo
+
+# ---------------------------------------------------------------------------
+# Editors and OS
+# ---------------------------------------------------------------------------
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---------------------------------------------------------------------------
+# Legacy prototype
+# ---------------------------------------------------------------------------
+# The pre-2.0 single-file scripts are kept for reference but their captured
+# screenshots are large and add nothing to the repository.
+legacy/*.png

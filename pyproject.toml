@@ -1,0 +1,142 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mirrorlab"
+version = "2.0.0"
+description = "MirrorLab — a cross-platform webcam AI playground: face expressions, hand gestures and real-time filters."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "TrinaxCode", email = "trinaxcode@users.noreply.github.com" }]
+keywords = [
+    "mediapipe",
+    "opencv",
+    "webcam",
+    "computer-vision",
+    "hand-tracking",
+    "face-mesh",
+    "gesture-recognition",
+    "facial-expression-recognition",
+    "real-time-filters",
+    "augmented-reality",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Multimedia :: Video :: Capture",
+    "Topic :: Scientific/Engineering :: Image Recognition",
+]
+
+dependencies = [
+    "numpy>=1.24",
+    "opencv-python>=4.8",
+    "mediapipe>=0.10.9",
+]
+
+[project.optional-dependencies]
+# GIF export (`--record` with the gif buffer, and the web demo's hero asset
+# workflow). Kept optional so the core install stays small.
+gif = ["pillow>=10.0"]
+cli = ["rich>=13.0", "PyYAML>=6.0"]
+dev = [
+    "pytest>=7.4",
+    "pytest-cov>=4.1",
+    "ruff>=0.5",
+    "black>=24.0",
+    "mypy>=1.8",
+    "rich>=13.0",
+    "PyYAML>=6.0",
+    "pillow>=10.0",
+]
+docs = ["mkdocs-material>=9.5"]
+all = [
+    "rich>=13.0",
+    "PyYAML>=6.0",
+    "pillow>=10.0",
+    "pytest>=7.4",
+    "pytest-cov>=4.1",
+    "ruff>=0.5",
+]
+
+[project.scripts]
+mirrorlab = "mirrorlab.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/TrinaxCode/mirrorlab"
+Repository = "https://github.com/TrinaxCode/mirrorlab"
+Issues = "https://github.com/TrinaxCode/mirrorlab/issues"
+Changelog = "https://github.com/TrinaxCode/mirrorlab/blob/main/CHANGELOG.md"
+"Live Demo" = "https://mirrorlab-demo.vercel.app"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+mirrorlab = ["py.typed", "data/*.json"]
+
+[tool.setuptools.exclude-package-data]
+# Model bundles are downloaded on first run, never shipped in the wheel.
+mirrorlab = ["data/models/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers"
+markers = [
+    "slow: marks tests as slow",
+    "gpu: marks tests that need a GPU",
+    "camera: marks tests that need a physical camera",
+]
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py39"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "C4", "SIM", "RUF"]
+ignore = [
+    "E501",    # line length is handled by black
+    "B008",    # function calls in argument defaults are how dataclasses work
+    "RUF001",  # the HUD draws box-drawing characters on purpose
+    "RUF002",
+    "RUF003",
+    # MirrorLab supports Python 3.9, where PEP 604 (`X | None`) is only valid
+    # inside `from __future__ import annotations`. Keeping `typing.Dict` and
+    # `Optional` means the annotations also survive runtime evaluation by
+    # third-party tools, so the "modernise" rules are deliberately off.
+    "UP006",
+    "UP035",
+    "UP037",
+    "UP045",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["B011"]
+
+[tool.black]
+line-length = 110
+target-version = ["py39"]
+
+[tool.mypy]
+python_version = "3.9"
+warn_unused_ignores = false
+ignore_missing_imports = true
+files = ["src/mirrorlab"]

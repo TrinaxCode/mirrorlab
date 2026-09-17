@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>MirrorLab — Expresiones, gestos y filtros en tu navegador</title>
+    <meta
+      name="description"
+      content="MirrorLab: laboratorio de visión artificial en el navegador. Detecta expresiones faciales y gestos de la mano con tu webcam y aplica filtros WebGL en tiempo real. Todo ocurre en tu dispositivo."
+    />
+    <meta name="theme-color" content="#05070d" />
+    <meta name="color-scheme" content="dark" />
+    <meta property="og:title" content="MirrorLab — webcam AI playground" />
+    <meta
+      property="og:description"
+      content="52 blendshapes, 21 gestos y 21 filtros WebGL en tiempo real. Sin servidor, sin subir tu cámara a ningún sitio."
+    />
+    <meta property="og:type" content="website" />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="preconnect" href="https://storage.googleapis.com" crossorigin />
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>
+      MirrorLab necesita JavaScript para ejecutar los modelos de visión en tu navegador. / MirrorLab
+      needs JavaScript to run the vision models in your browser.
+    </noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

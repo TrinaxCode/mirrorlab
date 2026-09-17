@@ -1,0 +1,55 @@
+name: ✨ Feature request
+description: Suggest a filter, a gesture, an effect, or anything else.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Filter, gesture and effect requests are very welcome — each of the three
+        registries is designed to be extended in a few lines. See
+        [docs/FILTERS.md](docs/FILTERS.md), [docs/GESTURES.md](docs/GESTURES.md)
+        and [docs/EXPRESSIONS.md](docs/EXPRESSIONS.md).
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind of feature is this?
+      options:
+        - New video filter
+        - New hand gesture
+        - New facial expression
+        - New AR effect
+        - Cross-platform / hardware support
+        - Performance
+        - Documentation
+        - Web demo
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does it solve?
+      description: Describe the need, not the implementation. "I want to X but currently Y."
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: If you have an idea of how it should work — a landmark rule, a shader, a library — describe it.
+    validations:
+      required: false
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: false
+  - type: checkboxes
+    id: contribute
+    attributes:
+      label: Contribution
+      options:
+        - label: I would be willing to open a pull request for this.
+          required: false

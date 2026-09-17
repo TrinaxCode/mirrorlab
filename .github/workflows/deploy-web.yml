@@ -1,0 +1,73 @@
+name: Deploy web demo
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "web/**"
+      - ".github/workflows/deploy-web.yml"
+  workflow_dispatch:
+    inputs:
+      production:
+        description: "Deploy to production"
+        type: boolean
+        default: true
+
+# A deploy must never be cancelled mid-flight, so unlike CI this group does not
+# cancel in progress — a queued deploy is fine, a half-finished one is not.
+concurrency:
+  group: deploy-web-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Vercel (production)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test -- --run
+      - run: npm run build
+
+      # Requires three repository secrets:
+      #   VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID
+      # See docs: https://vercel.com/docs/cli/global-options
+      - name: Deploy
+        id: deploy
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then
+            echo "::error::VERCEL_TOKEN is not set. Add it in Settings → Secrets and variables → Actions."
+            exit 1
+          fi
+          npx vercel@latest pull --yes --environment=production --token="$VERCEL_TOKEN"
+          npx vercel@latest build --prod --token="$VERCEL_TOKEN"
+          url=$(npx vercel@latest deploy --prebuilt --prod --yes --token="$VERCEL_TOKEN")
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "### Deployed to $url" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Smoke-test the deployment
+        run: |
+          url="${{ steps.deploy.outputs.url }}"
+          code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "$url")
+          echo "$url → HTTP $code"
+          test "$code" = "200"

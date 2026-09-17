@@ -1,0 +1,38 @@
+cff-version: 1.2.0
+message: "If you use MirrorLab in academic work, please cite it as below."
+title: "MirrorLab: real-time webcam filters, facial expressions and hand gestures on the CPU"
+abstract: >-
+  MirrorLab is a cross-platform computer-vision playground that turns a webcam into a
+  real-time demo of facial expression recognition and hand gesture control. It reads 52
+  ARKit-style blendshape channels for expressions and classifies 21 hand landmarks with
+  declarative geometric rules, then stacks 54 chainable video filters and 15 procedural
+  augmented-reality effects on top. It is CPU-only, runs on macOS, Windows and Linux, and
+  includes a browser demo. Detection degrades gracefully across five backend rungs —
+  MediaPipe Tasks, MediaPipe Solutions, OpenCV YuNet, OpenCV Haar and none — so the
+  application keeps running when a model or runtime is unavailable. No frames are ever
+  transmitted; the only network access is a one-time download of the model bundles.
+type: software
+authors:
+  - family-names: "Trinidad Arguello"
+    given-names: "Huascar Ignacio D"
+    alias: "TrinaxCode"
+    email: "trinaxcode@users.noreply.github.com"
+version: "2.0.0"
+date-released: "2026-01-15"
+license: MIT
+repository-code: "https://github.com/TrinaxCode/mirrorlab"
+url: "https://mirrorlab-demo.vercel.app"
+keywords:
+  - computer-vision
+  - webcam
+  - mediapipe
+  - opencv
+  - hand-tracking
+  - gesture-recognition
+  - facial-expression-recognition
+  - blendshapes
+  - face-mesh
+  - real-time-filters
+  - augmented-reality
+  - cpu-only
+  - python

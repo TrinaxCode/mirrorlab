@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 📖 Documentation
+    url: https://github.com/TrinaxCode/mirrorlab#readme
+    about: Install, usage, configuration and troubleshooting are all covered in the README and docs/.
+  - name: 💬 Questions & ideas
+    url: https://github.com/TrinaxCode/mirrorlab/discussions
+    about: Ask a question or share what you built with MirrorLab.
+  - name: 🔐 Security & privacy
+    url: https://github.com/TrinaxCode/mirrorlab/security/advisories/new
+    about: Report a vulnerability privately. Please do not open a public issue.
