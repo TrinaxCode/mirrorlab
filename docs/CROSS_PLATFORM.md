@@ -497,12 +497,15 @@ machine-readable dump (handy in a bug report). `mirrorlab cameras` covers the ca
 which indices respond, which backends deliver frames, and the platform troubleshooting
 checklist when nothing does.
 
-> **Known gap.** In the current source, `_cmd_doctor` prints the `display` line and the
-> `Capabilities` counts by reading keys from `probe_environment()` that it does not
-> provide — those fields live on `MirrorLab.capability_report()` instead. Until that is
-> wired up, `display` reads `headless (no window)` on every machine and the three
-> capability counters read `0`. `mirrorlab doctor --json` has the same gap; the detector
-> and model sections are accurate.
+> **Reading the `display` line.** It reports whether a GUI window *can* be opened in the
+> current session, not whether the machine has a display. It reads `headless (no window)`
+> when `DISPLAY`/`WAYLAND_DISPLAY` are unset — a shell over SSH, a container, a CI runner,
+> some IDE terminals — and `available` on a normal desktop session. MirrorLab automatically
+> runs windowless in the first case; override with `--headless` either way.
+>
+> The three `Capabilities` counters are read from the live filter and effect registries, so
+> they should always report the real totals (54 / 11 / 4 in 2.0.0). A `0` there is a bug
+> worth reporting.
 
 Reproduce the platform report on any machine with:
 
