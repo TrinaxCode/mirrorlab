@@ -17,8 +17,8 @@ authors:
     given-names: "Huascar Ignacio D"
     alias: "TrinaxCode"
     email: "trinaxcode@users.noreply.github.com"
-version: "2.0.0"
-date-released: "2026-01-15"
+version: "2.1.0"
+date-released: "2026-10-26"
 license: MIT
 repository-code: "https://github.com/TrinaxCode/mirrorlab"
 url: "https://mirrorlab-demo.vercel.app"

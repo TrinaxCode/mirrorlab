@@ -6,10 +6,10 @@
 
 | Version | Supported | Notes |
 | --- | --- | --- |
-| `2.0.x` | ✅ | Current release. Security fixes land here first. |
-| `2.x` (pre-release) | ⚠️ | Fixes are backported only when the change is trivial. |
-| `1.x` / `legacy/` | ❌ | The original single-file prototype, kept for reference. Unsupported and not installed by the package. |
-| `web/` demo | ✅ | Static browser build; report issues here and they are treated as `2.0.x`. |
+| `2.1.x` | ✅ | Current release. Security fixes land here first. |
+| `2.0.x` | ⚠️ | Fixes are backported only when the change is trivial. |
+| `1.x` | ❌ | The original single-file prototype. Unsupported. |
+| `web/` demo | ✅ | Static browser build; report issues here and they are treated as `2.1.x`. |
 
 MirrorLab 2.x tracks Python 3.9–3.12. A vulnerability that only reproduces on an
 end-of-life Python or on a version outside the tested dependency matrix (see

@@ -13,7 +13,7 @@ Legend: `[x]` shipped · `[ ]` planned · `[~]` in progress
 
 Released 2026-01-15. Details in [CHANGELOG.md](CHANGELOG.md#200---2026-01-15).
 
-- [x] Modular package replacing the single-file prototype (now in `legacy/`)
+- [x] Modular package replacing the single-file prototype (removed from the tree in 2.1.0)
 - [x] MediaPipe **Tasks** migration: 478 landmarks, 52 blendshapes, facial transformation matrix
 - [x] Five-rung detector fallback ladder, so the app degrades instead of crashing
 - [x] 54 chainable video filters across six categories, plus 10 curated presets
@@ -107,12 +107,10 @@ model downloads — this is about reading what is already there.
 Goal: turn MirrorLab from an application into something other things are built on. Both
 items here need an interface agreed before code is written; open an issue to discuss.
 
-- [ ] **Virtual camera output.** Publish the rendered frame as a system camera so Zoom,
-      Meet, Teams, Discord and OBS can use it directly. The blocker is licensing, not
-      engineering: `pyvirtualcam` is **GPLv2** and MirrorLab is MIT, so this ships as an
-      opt-in extra (`pip install "mirrorlab[virtualcam]"`) and never as a default
-      dependency. Investigate a subprocess-based bridge as an alternative that keeps the
-      licence boundary clean.
+- [x] **Virtual camera output.** Shipped in 2.1 as `mirrorlab cam`. `pyvirtualcam` is
+      **GPLv2** and MirrorLab is MIT, so it is the opt-in `vcam` extra
+      (`pip install "mirrorlab[vcam]"`) and never a default dependency. A subprocess-based
+      bridge that keeps the licence boundary cleaner is still open.
 - [ ] **Plugin API.** A documented, versioned extension point so third-party filters,
       effects and gestures can be installed as packages. This has a security dimension that
       must be designed in, not bolted on: a plugin is arbitrary Python, so the API needs an

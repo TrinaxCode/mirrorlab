@@ -254,15 +254,14 @@ Wrong shot? 👎 (thumbs down) deletes the most recent capture.
 
 ### Can I use this as a virtual camera in Zoom, OBS or Meet?
 
-**Not yet** — it is on the [roadmap](../ROADMAP.md), not in 2.0.0. The reason it is a
-roadmap item rather than a feature is licensing: the standard Python answer is
-`pyvirtualcam`, which is **GPLv2**. MirrorLab is MIT, and linking a GPL library into the
-default install would relicense the whole project. So when it lands it will be an
-**optional extra** — `pip install "mirrorlab[virtualcam]"` — that you opt into, keeping the
-core MIT and dependency-light.
+**Yes**, since 2.1: `mirrorlab cam` publishes the processed picture as a virtual camera. See
+[STUDIO.md](STUDIO.md) for the per-platform setup. The only licensing wrinkle is that the
+standard Python answer, `pyvirtualcam`, is **GPLv2** while MirrorLab is MIT, so it is an
+**optional extra** — `pip install "mirrorlab[vcam]"` — that you opt into, keeping the core
+MIT and dependency-light.
 
-Until then, the workaround is the usual one: run MirrorLab fullscreen and use OBS's
-Window Capture, or share the window directly.
+Without it, `mirrorlab cam --output none --preview` still shows the result in a local window,
+which you can capture with OBS's Window Capture.
 
 ### Can I run it on a server with no camera and no screen?
 
@@ -385,9 +384,9 @@ Two things to read before you ship, though:
 
 ### What if I want a virtual camera, which is GPL-licensed?
 
-That is precisely why it will only ever be an optional extra. `pyvirtualcam` is GPLv2;
+That is precisely why it is only an optional extra. `pyvirtualcam` is GPLv2;
 putting it in the default dependency set would relicense MirrorLab. As an opt-in extra
-(`pip install "mirrorlab[virtualcam]"`) the core stays MIT and you make the GPL choice
+(`pip install "mirrorlab[vcam]"`) the core stays MIT and you make the GPL choice
 yourself. This is documented in [THIRD_PARTY_LICENSES.md](../THIRD_PARTY_LICENSES.md) so the
 decision is explicit rather than accidental.
 

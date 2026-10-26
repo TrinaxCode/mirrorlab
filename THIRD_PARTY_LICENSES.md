@@ -6,8 +6,8 @@ MirrorLab itself is [MIT licensed](LICENSE) — © 2026 TrinaxCode. This file li
 depends on, under what terms, and what those terms ask of you.
 
 Short version: **everything MirrorLab links against is permissively licensed.** The one
-GPL component in this space (`pyvirtualcam`) is deliberately *not* a dependency and will
-only ever be an optional extra. The model weights are not distributed by this project at
+GPL component in this space (`pyvirtualcam`) is deliberately *not* a default dependency: it is
+the opt-in `vcam` extra and is never installed unless you ask for it. The model weights are not distributed by this project at
 all; they are downloaded at runtime and governed by their own model cards.
 
 ---
@@ -18,7 +18,7 @@ all; they are downloaded at runtime and governed by their own model cards.
 - [Optional dependencies](#optional-dependencies)
 - [Transitive dependencies](#transitive-dependencies)
 - [Model licences](#model-licences)
-- [Deliberately not a dependency: pyvirtualcam](#deliberately-not-a-dependency-pyvirtualcam)
+- [Opt-in only: pyvirtualcam](#opt-in-only-pyvirtualcam)
 - [Assets in this repository](#assets-in-this-repository)
 - [What this means for your project](#what-this-means-for-your-project)
 
@@ -133,17 +133,17 @@ What that means:
   SHA-256 per model is a welcome contribution; see [SECURITY.md](SECURITY.md) and the
   [roadmap](ROADMAP.md).
 
-## Deliberately not a dependency: pyvirtualcam
+## Opt-in only: pyvirtualcam
 
 The standard way to expose a Python-rendered frame as a system camera (for Zoom, Meet, Teams,
 Discord or OBS) is [`pyvirtualcam`](https://github.com/letmaik/pyvirtualcam). It is
 **GPLv2**, and MirrorLab is MIT.
 
 Linking a GPL library into the default install would relicense the entire project, so
-MirrorLab does not. If virtual-camera output ships, it will be an **opt-in extra**:
+MirrorLab does not. Virtual-camera output is an **opt-in extra**:
 
 ```bash
-pip install "mirrorlab[virtualcam]"
+pip install "mirrorlab[vcam]"
 ```
 
 That keeps the licence boundary where it belongs — in your hands, made explicitly, rather
@@ -161,12 +161,10 @@ default.
 | `assets/reactions/*.png` | Eight reaction images (angry, love, neutral, peace, sad, smile, surprised, tongue) | Part of this repository, MIT — see the note below |
 | `tests/assets/portrait.jpg`, `tests/assets/woman_hands.jpg` | Test fixtures used by detection tests | Part of this repository, MIT |
 | `web/public/favicon.svg` | The demo's favicon | Part of this repository, MIT |
-| `legacy/**` | The 1.x prototype, kept for reference. **Not installed, not imported, not supported** | Part of this repository, MIT |
 
 Note on the reaction images: they are present in `assets/reactions/` and addressed by the
-`reactions_dir` config key, but nothing in the 2.0 code path renders them yet — the
-`--reactions` flag and `show_reactions` key are accepted and currently unused. See the
-[roadmap](ROADMAP.md). Everything MirrorLab actually draws is generated procedurally with
+`reactions_dir` config key and shown by the playground's picture-in-picture reaction.
+Everything else MirrorLab draws is generated procedurally with
 OpenCV primitives, which is why there is no binary artwork in the render path.
 
 ## What this means for your project

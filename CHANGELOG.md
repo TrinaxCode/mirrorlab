@@ -13,13 +13,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Nothing yet. New work lands here before it is released.
 
+## [2.1.0] - 2026-10-26
+
+MirrorLab Studio: the project now leads with a virtual camera for video calls. The
+filter and AR playground is unchanged and lives on as `mirrorlab play`.
+
+### Added
+
+- **`mirrorlab cam`**, a virtual camera that Zoom, Meet, Teams, Discord and OBS can select.
+  Background `blur` / `replace` / `green` / `black` with a temporally smoothed person mask,
+  face-anchored **auto-framing** with a deadzone and zoom limit, **studio light** metered on
+  the face rather than the whole frame, and a **privacy shutter** (on demand, by gesture, or
+  automatically after `--away-after` seconds with nobody in frame).
+- **Reactions**: thumbs up, heart and ok float over the picture for the other people on the call.
+- **`mirrorlab ctl`** controls a running session from another terminal or a hotkey, over a
+  loopback-only (127.0.0.1) control port.
+- **Profiles** (`--profile meeting`, and others) and a validated `StudioSettings` layer.
+- **`vcam` extra** (`pip install "mirrorlab[vcam]"`). `pyvirtualcam` is GPL-2.0, so it is opt-in
+  and not part of `all`.
+- `mirrorlab doctor` reports whether a virtual camera is available and prints the exact fix.
+- `--input` accepts a still image (`StillImageSource`) for reproducible runs and benchmarks,
+  and `--report` prints per-stage latency percentiles.
+- Per-gesture hold times (`dwell_overrides`) in the gesture action engine.
+- Documentation: `docs/STUDIO.md` and `docs/PLAYGROUND.md`.
+
 ### Changed
 
-- Nothing yet.
+- `mirrorlab` with no arguments prints a short welcome instead of starting the playground;
+  `mirrorlab run` still works as an alias of `mirrorlab play`.
+- Webcams are asked for MJPEG first (except on AVFoundation), which is what lets most USB
+  cameras reach 30 fps at 720p.
+- The hand model can search for a hand every Nth frame while none is visible
+  (`hand_idle_stride`), which saves CPU in the studio.
+- README, package description and keywords describe the virtual camera.
+
+### Removed
+
+- The `legacy/` folder (the 1.x prototype). It remains in the git history and in the
+  2.0.0 release.
 
 ### Fixed
 
-- Nothing yet.
+- The face-warp effect now passes `float32` maps to `cv2.remap` explicitly instead of relying on
+  the dtype of the arrays it computed.
 
 ## [2.0.0] - 2026-01-15
 
@@ -159,7 +195,7 @@ is no longer installed, imported or supported.
 
 ## [1.0.0] - 2024
 
-The original prototype, preserved in `legacy/`.
+The original prototype (removed from the tree in 2.1.0; see the git history).
 
 ### Added
 
@@ -171,6 +207,7 @@ The original prototype, preserved in `legacy/`.
 - A `config.json` with the image directory, display size and confidence thresholds.
 - Spanish-language documentation, example images and setup scripts.
 
-[Unreleased]: https://github.com/TrinaxCode/mirrorlab/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/TrinaxCode/mirrorlab/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/TrinaxCode/mirrorlab/releases/tag/v2.1.0
 [2.0.0]: https://github.com/TrinaxCode/mirrorlab/releases/tag/v2.0.0
 [1.0.0]: https://github.com/TrinaxCode/mirrorlab/releases/tag/v1.0.0
