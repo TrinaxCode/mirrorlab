@@ -250,6 +250,25 @@ class TestPipeline:
             out = pipeline.process(frame, now=step * 0.05).output
         assert pipeline.shutter.level == 0.0 and np.array_equal(out, frame)
 
+    def test_first_frame_after_returning_is_processed_not_raw(self):
+        # Regression: the away flag used to lag a frame, so the frame on which you came
+        # back skipped the background stage but was already fading in from the shutter,
+        # showing the real room unblurred.
+        segmenter = FakeSegmenter()
+        calls = []
+        original = segmenter.process
+        segmenter.process = lambda *a: (calls.append(1), original(*a))[1]
+        perception = FakePerception(faces=False)
+        settings = make_settings(background="blur", away_after=1.0, gesture_control=False)
+        pipeline = StudioPipeline(settings, perception=perception, segmenter=segmenter)
+        for step in range(60):
+            pipeline.process(scene(), now=step * 0.05)
+        assert pipeline.shutter.level == 1.0
+        before = len(calls)
+        perception.faces = True
+        pipeline.process(scene(), now=60 * 0.05)
+        assert len(calls) == before + 1, "the returning frame must go through the background stage"
+
     def test_away_never_reopens_a_manual_close(self):
         settings = make_settings(away_after=1.0, gesture_control=False)
         perception = FakePerception(faces=True)
@@ -481,6 +500,73 @@ class TestControlChannel:
         finally:
             idle.close()
 
+    @pytest.mark.skipif(sys.platform == "win32", reason="POSIX ownership and symlinks")
+    def test_a_planted_symlink_at_the_advertisement_path_is_not_written_through(self, tmp_path):
+        import os
+
+        runtime = tmp_path / "run"
+        runtime.mkdir(mode=0o700)
+        victim = tmp_path / "attacker_file"
+        victim.write_text("untouched")
+        os.symlink(victim, runtime / "control.json")
+        with ControlServer(StudioState(), path=runtime / "control.json"):
+            pass
+        assert victim.read_text() == "untouched"
+
+    @pytest.mark.skipif(sys.platform == "win32", reason="POSIX ownership and symlinks")
+    def test_a_symlinked_runtime_directory_is_refused(self, tmp_path):
+        import os
+
+        real = tmp_path / "real"
+        real.mkdir(mode=0o700)
+        link = tmp_path / "link"
+        os.symlink(real, link)
+        with pytest.raises(OSError, match="not a directory owned by you"):
+            ControlServer(StudioState(), path=link / "control.json").start()
+        assert not (real / "control.json").exists()
+
+    @pytest.mark.skipif(sys.platform == "win32", reason="POSIX permissions")
+    def test_an_open_runtime_directory_is_tightened(self, tmp_path):
+        import os
+
+        runtime = tmp_path / "run"
+        runtime.mkdir()
+        os.chmod(runtime, 0o755)
+        with ControlServer(StudioState(), path=runtime / "control.json"):
+            assert (runtime.stat().st_mode & 0o777) == 0o700
+
+    @pytest.mark.skipif(sys.platform == "win32", reason="POSIX permissions")
+    def test_the_client_refuses_an_advertisement_others_can_read(self, server):
+        import os
+
+        os.chmod(server.path, 0o644)
+        with pytest.raises(ControlClientError, match="Refusing to trust"):
+            send_command({"cmd": "status"}, server.path)
+
+    def test_the_client_refuses_a_non_loopback_host(self, tmp_path):
+        import os
+
+        target = tmp_path / "control.json"
+        fd = os.open(target, os.O_WRONLY | os.O_CREAT, 0o600)
+        with os.fdopen(fd, "w") as handle:
+            json.dump({"host": "203.0.113.9", "port": 9, "token": "x"}, handle)
+        with pytest.raises(ControlClientError, match=r"127\.0\.0\.1"):
+            send_command({"cmd": "status"}, target)
+
+    @pytest.mark.skipif(sys.platform == "win32", reason="POSIX defaults")
+    def test_the_default_location_is_never_a_shared_temp_directory(self, monkeypatch, tmp_path):
+        import tempfile
+
+        from mirrorlab.studio.control import runtime_file
+
+        monkeypatch.delenv("MIRRORLAB_RUNTIME_DIR", raising=False)
+        monkeypatch.delenv("XDG_RUNTIME_DIR", raising=False)
+        monkeypatch.delenv("XDG_CACHE_HOME", raising=False)
+        monkeypatch.setenv("HOME", str(tmp_path))
+        location = runtime_file()
+        assert location == tmp_path / ".cache" / "mirrorlab" / "control.json"
+        assert not str(location).startswith(tempfile.gettempdir() + "/mirrorlab-")
+
     def test_client_reports_a_missing_session_helpfully(self, tmp_path):
         with pytest.raises(ControlClientError, match="mirrorlab cam"):
             send_command({"cmd": "status"}, tmp_path / "absent.json")
@@ -488,6 +574,7 @@ class TestControlChannel:
     def test_client_reports_a_dead_session_helpfully(self, server):
         server.stop()
         server.path.write_text(json.dumps({"host": "127.0.0.1", "port": 1, "token": "x", "pid": 0}))
+        server.path.chmod(0o600)  # the client only trusts a private advertisement
         with pytest.raises(ControlClientError, match="not answering"):
             send_command({"cmd": "status"}, server.path, timeout=1.0)
 

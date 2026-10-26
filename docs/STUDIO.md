@@ -66,6 +66,15 @@ mirrorlab cam --profile meeting --device /dev/video10
 `exclusive_caps=1` matters: Chrome and Zoom only list a loopback device that sets it.
 Loading the module needs root and, with Secure Boot enabled, a signed module.
 
+If `mirrorlab cam` warns `Person segmentation is unavailable (libEGL.so.1: cannot open shared
+object file)`, a minimal install is missing the OpenGL ES runtime that MediaPipe's segmentation
+graph needs. Until you fix it, background effects blur the *whole* frame instead of leaking your
+room, which is safe but not what you want:
+
+```bash
+sudo apt install libegl1 libgles2
+```
+
 ### macOS
 
 Install [OBS Studio](https://obsproject.com) (version 30 or later), then do this **once**:

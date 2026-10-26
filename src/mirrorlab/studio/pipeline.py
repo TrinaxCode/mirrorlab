@@ -177,10 +177,17 @@ class StudioPipeline:
         boxes = face_boxes(faces)
         face_box = union_box(boxes)
 
+        # Decide what is covering the picture from *this* frame's evidence, before the
+        # stages run. If the away flag lagged a frame, the first frame after you came
+        # back would skip the background stage but still be faded in by the shutter,
+        # so the real room would show through unblurred.
+        privacy = state.privacy
+        self._away = self.away.update(bool(faces), now)
+
         # While the shutter is fully closed nothing underneath can be seen, so the
         # expensive stages are skipped. Perception keeps running: gestures must
         # still be able to reopen it, and the away detector needs to see faces.
-        covered = self.shutter.level >= 1.0 and (state.privacy or self._away)
+        covered = self.shutter.level >= 1.0 and (privacy or self._away)
 
         # ---- light -------------------------------------------------------
         t0 = time.perf_counter()
@@ -220,8 +227,7 @@ class StudioPipeline:
             work = self.reactions.apply(work, now)
 
         # ---- privacy shutter (last) ------------------------------------------
-        self._away = self.away.update(bool(faces), now)
-        self.shutter.set_closed(state.privacy)
+        self.shutter.set_closed(privacy)
         output = self.shutter.apply(work, now, force=self._away)
 
         return FrameResult(

@@ -54,6 +54,14 @@ filter and AR playground is unchanged and lives on as `mirrorlab play`.
 
 ### Fixed
 
+- Returning to the frame after the away cover: the first frame skipped the background stage but
+  was already fading in, so the real room showed through unblurred. The away state is now
+  evaluated before the stages run.
+- The control port's advertisement file no longer lives in a predictable shared `/tmp` path
+  when `XDG_RUNTIME_DIR` is unset (it is under `~/.cache/mirrorlab`), the directory is checked
+  to be a real directory you own, the file is never written through a symlink, and
+  `mirrorlab ctl` refuses an advertisement that other users could read or that names a host other
+  than 127.0.0.1.
 - The face-warp effect now passes `float32` maps to `cv2.remap` explicitly instead of relying on
   the dtype of the arrays it computed.
 
