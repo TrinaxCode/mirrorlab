@@ -205,8 +205,8 @@ def test_landmark_smoother_preserves_distinct_points():
     for index in range(40):
         out = smoother.apply(points, timestamp=index / 60.0)
     # The spread must survive smoothing; a shared filter would flatten it to ~0.
-    assert out[:, 0].ptp() > 0.7
-    assert out[:, 1].ptp() > 0.5
+    assert np.ptp(out[:, 0]) > 0.7
+    assert np.ptp(out[:, 1]) > 0.5
     np.testing.assert_allclose(out[:, 0], points[:, 0], atol=1e-3)
     np.testing.assert_allclose(out[:, 1], points[:, 1], atol=1e-3)
 

@@ -122,6 +122,11 @@ def _open_raw(index: int, backend: str, width: int, height: int, fps: int) -> Op
     if not cap.isOpened():
         cap.release()
         return None
+    if backend != "avfoundation":
+        # Most USB webcams only reach 30 fps at 720p/1080p in MJPEG; their raw
+        # YUYV mode is capped by USB bandwidth (often 10 fps at 720p). Ask for
+        # MJPEG first. Devices that cannot do it ignore the request.
+        cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*"MJPG"))
     if width:
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, float(width))
     if height:
@@ -449,6 +454,57 @@ class SyntheticSource:
             yield frame
 
 
+IMAGE_EXTENSIONS = (".jpg", ".jpeg", ".png", ".bmp", ".webp")
+
+
+class StillImageSource:
+    """Serves one image forever, as if it were a camera pointed at a photograph.
+
+    The point is reproducibility: a benchmark or a test that needs a real face in
+    frame can use a fixed photo and get the same detections on every run, on every
+    machine, with no camera and no permissions. Images that do not match the
+    requested aspect ratio are cropped (never stretched), anchored near the top.
+    """
+
+    def __init__(self, path: "str | Path", width: int = 1280, height: int = 720, fps: float = 30.0) -> None:
+        image = cv2.imread(str(path), cv2.IMREAD_COLOR)
+        if image is None:
+            raise CameraError(f"Could not read image: {path}")
+        src_h, src_w = image.shape[:2]
+        scale = max(width / src_w, height / src_h)
+        resized = cv2.resize(image, (max(width, round(src_w * scale)), max(height, round(src_h * scale))))
+        x0 = (resized.shape[1] - width) // 2
+        # Anchor toward the top: in a portrait the face lives in the upper part,
+        # and a centred crop of a tall photo would cut it off.
+        y0 = int((resized.shape[0] - height) * 0.12)
+        self._frame = np.ascontiguousarray(resized[y0 : y0 + height, x0 : x0 + width])
+        self._count = 0
+        self.info = CameraInfo(
+            index=0, backend="image", width=width, height=height, fps=float(fps), source="image"
+        )
+
+    def read(self, timeout: float = 0.0) -> Optional[np.ndarray]:
+        self._count += 1
+        return self._frame.copy()
+
+    @property
+    def sequence(self) -> int:
+        return self._count
+
+    @property
+    def is_alive(self) -> bool:
+        return True
+
+    def release(self) -> None:  # pragma: no cover - nothing to release
+        pass
+
+    def __enter__(self) -> "StillImageSource":
+        return self
+
+    def __exit__(self, *exc_info: object) -> None:
+        self.release()
+
+
 VideoFileSource = CameraStream  #: alias kept for readability in user code
 
 
@@ -462,12 +518,14 @@ def open_source(
     mirror: bool = False,
     synthetic: bool = False,
     synthetic_frames: int = 0,
-) -> CameraStream | SyntheticSource:
-    """Factory used by the CLI: pick webcam, video file or synthetic source."""
+) -> CameraStream | SyntheticSource | StillImageSource:
+    """Factory used by the CLI: pick webcam, video file, still image or synthetic source."""
     if synthetic:
         return SyntheticSource(width=width, height=height, fps=float(fps), frame_limit=synthetic_frames)
     if source is None:
         source = 0
+    if isinstance(source, (str, Path)) and Path(str(source)).suffix.lower() in IMAGE_EXTENSIONS:
+        return StillImageSource(source, width=width, height=height, fps=float(fps))
     return CameraStream(
         source,
         width=width,

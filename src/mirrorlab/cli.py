@@ -1,17 +1,16 @@
 """Command-line interface.
 
-``mirrorlab`` is designed so the *first* command a user types works, and every
-error message tells them exactly what to type next::
+``mirrorlab`` is designed so every error message tells the user exactly what to
+type next::
 
-    mirrorlab                      # just run it
     mirrorlab doctor               # is my machine ready?
-    mirrorlab filters              # what can it do?
-    mirrorlab gestures             # how do I drive it?
-    mirrorlab run --filter cartoon --effect sunglasses
+    mirrorlab cam --profile meeting   # publish a virtual camera
+    mirrorlab ctl privacy          # control the running session
+    mirrorlab play                 # the filter / AR playground
     mirrorlab benchmark --filter cartoon
 
 Every subcommand supports ``--help`` and ``--json`` where a machine-readable
-form makes sense (used by the website's catalog generator).
+form makes sense.
 """
 
 from __future__ import annotations
@@ -56,7 +55,20 @@ BANNER = r"""
 
 
 def _banner() -> str:
-    return _colour(BANNER, _CYAN) + _colour(f"   webcam AI playground · v{__version__} “{CODENAME}”\n", _DIM)
+    return _colour(BANNER, _CYAN) + _colour(f"   virtual camera and gesture control · v{__version__}\n", _DIM)
+
+
+WELCOME = """\
+MirrorLab {version} — a virtual camera with background blur, auto-framing,
+studio light and hand-gesture control. CPU only, everything stays on your machine.
+
+  mirrorlab doctor                check that this machine is ready
+  mirrorlab cam --profile meeting   start the virtual camera
+  mirrorlab ctl privacy           control a running session from another terminal
+  mirrorlab play                  the filter and AR-effect playground
+
+Run `mirrorlab --help` for every command, or `mirrorlab cam --help` to get started.
+"""
 
 
 # --------------------------------------------------------------------------- #
@@ -66,17 +78,17 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="mirrorlab",
         description=(
-            "MirrorLab — a webcam AI playground: facial expressions, hand gestures "
-            "and 54 real-time filters. CPU only, no account, nothing uploaded."
+            "MirrorLab — a virtual camera with background blur, auto-framing, studio light "
+            "and hand-gesture control. CPU only, no account, nothing uploaded."
         ),
         epilog=(
             "Examples:\n"
-            "  mirrorlab                                  run with defaults\n"
-            "  mirrorlab run --filter cartoon --effect sunglasses\n"
-            "  mirrorlab run --preset noir --filter sketch\n"
             "  mirrorlab doctor                           check this machine\n"
-            "  mirrorlab filters --category artistic\n"
-            "  mirrorlab gestures                         hands-free cheat sheet\n"
+            "  mirrorlab cam --profile meeting            start the virtual camera\n"
+            "  mirrorlab cam --check                      is a virtual camera available?\n"
+            "  mirrorlab ctl privacy                      cover the camera from another terminal\n"
+            "  mirrorlab gestures                         the hand-gesture cheat sheet\n"
+            "  mirrorlab play --filter cartoon            the filter playground\n"
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
@@ -97,8 +109,18 @@ def build_parser() -> argparse.ArgumentParser:
 
     sub = parser.add_subparsers(dest="command")
 
-    # -- run ------------------------------------------------------------- #
-    run = sub.add_parser("run", parents=[common], help="start the live playground (default command)")
+    # -- cam / ctl (the studio) ------------------------------------------ #
+    from .studio.cli import add_parsers as add_studio_parsers
+
+    add_studio_parsers(sub, common)
+
+    # -- play (alias: run) ----------------------------------------------- #
+    run = sub.add_parser(
+        "play",
+        aliases=["run"],
+        parents=[common],
+        help="the live filter / AR-effect / gesture playground",
+    )
     _add_run_arguments(run)
 
     # -- doctor ---------------------------------------------------------- #
@@ -376,8 +398,11 @@ def _cmd_doctor(args: argparse.Namespace) -> int:
     from .filters.base import FILTERS
 
     info: Dict[str, Any] = platform_summary()
+    from .studio.vcam import probe as probe_vcam
+
     info.update(probe_environment(auto_download=bool(args.download)))
     info["models"] = list_model_status()
+    info["virtual_camera"] = probe_vcam().to_dict()
     info.setdefault("filters", len(FILTERS))
     info.setdefault("face_effects", len(FACE_EFFECTS))
     info.setdefault("hand_effects", len(HAND_EFFECTS))
@@ -428,7 +453,13 @@ def _cmd_doctor(args: argparse.Namespace) -> int:
             f"\n    Download the essentials with: {_colour('mirrorlab models --download ' + ' '.join(missing), _CYAN)}"
         )
 
-    print(_colour("\n  Capabilities", _BOLD))
+    from .studio.cli import doctor_lines
+
+    print(_colour("\n  Virtual camera", _BOLD))
+    for line in doctor_lines(info["virtual_camera"]):
+        print(f"    {line}")
+
+    print(_colour("\n  Playground", _BOLD))
     print(f"    filters            {info.get('filters', 0)}")
     print(f"    face effects       {info.get('face_effects', 0)}")
     print(f"    hand effects       {info.get('hand_effects', 0)}")
@@ -754,8 +785,10 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     """CLI entry point. Returns a process exit code."""
     argv = list(sys.argv[1:] if argv is None else argv)
 
-    # `mirrorlab` with no arguments (or only run-flags) means `mirrorlab run`.
     known = {
+        "cam",
+        "ctl",
+        "play",
         "run",
         "doctor",
         "filters",
@@ -773,8 +806,12 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     if argv and argv[0] not in known and not argv[0].startswith("-"):
         print(f"error: unknown command {argv[0]!r}\nRun `mirrorlab --help` for the list.", file=sys.stderr)
         return 2
-    if not argv or (argv[0].startswith("-") and argv[0] not in top_level_only):
-        argv = ["run", *argv]
+    if not argv:
+        print(WELCOME.format(version=__version__))
+        return 0
+    if argv[0].startswith("-") and argv[0] not in top_level_only:
+        # Bare flags used to mean `mirrorlab run <flags>`; keep that working.
+        argv = ["play", *argv]
 
     parser = build_parser()
     args = parser.parse_args(argv)
@@ -791,7 +828,12 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         except ValueError:
             setup_logging("INFO")
 
+    from .studio.cli import cmd_cam, cmd_ctl
+
     handlers = {
+        "cam": cmd_cam,
+        "ctl": cmd_ctl,
+        "play": _cmd_run,
         "run": _cmd_run,
         "demo": _cmd_demo,
         "doctor": _cmd_doctor,
@@ -805,7 +847,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         "cameras": _cmd_cameras,
         "gallery": _cmd_gallery,
     }
-    handler = handlers.get(args.command or "run")
+    handler = handlers.get(args.command or "play")
     if handler is None:  # pragma: no cover - argparse prevents this
         parser.print_help()
         return 2

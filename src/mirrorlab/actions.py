@@ -106,6 +106,9 @@ class GestureController:
         refractory: Seconds to ignore a gesture after it fires.
         history: Number of frames in the majority-vote window.
         enabled: Master switch (``--no-gesture-control`` disables it).
+        dwell_overrides: Per-gesture hold time in seconds. Poses people make by
+            accident (a flat palm, a fist) deserve a longer hold than a deliberate
+            one (a thumbs up), so the hold is configurable per gesture.
 
     Example:
         >>> controller = GestureController()                       # doctest: +SKIP
@@ -120,9 +123,11 @@ class GestureController:
         refractory: float = 0.9,
         history: int = 5,
         enabled: bool = True,
+        dwell_overrides: Optional[Dict[str, float]] = None,
     ) -> None:
-        self.bindings = dict(bindings or DEFAULT_BINDINGS)
+        self.bindings = dict(DEFAULT_BINDINGS if bindings is None else bindings)
         self.dwell = float(max(0.0, dwell))
+        self.dwell_overrides = {k: float(max(0.0, v)) for k, v in (dwell_overrides or {}).items()}
         self.refractory = float(max(0.0, refractory))
         self.enabled = bool(enabled)
 
@@ -208,10 +213,11 @@ class GestureController:
             self.last_progress = 0.0
             return events
 
-        if self.dwell <= 0.0:
+        hold = self.dwell_overrides.get(stable, self.dwell)
+        if hold <= 0.0:
             self._dwell.progress = 1.0
         else:
-            self._dwell.progress = min(1.0, (now - self._dwell.started) / self.dwell)
+            self._dwell.progress = min(1.0, (now - self._dwell.started) / hold)
         self.last_progress = self._dwell.progress
 
         if self._dwell.progress >= 1.0 and self._ready(stable, now):

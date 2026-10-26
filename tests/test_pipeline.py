@@ -381,12 +381,13 @@ def test_parser_builds_every_subcommand():
         assert parser.parse_args([command]) is not None
 
 
-def test_bare_invocation_is_treated_as_run(capsys):
-    """`mirrorlab --help` must not be swallowed by the implicit `run`."""
+def test_help_is_not_swallowed_by_the_implicit_play_command(capsys):
+    """`mirrorlab --help` must print the top-level help, not the playground's."""
     with pytest.raises(SystemExit) as excinfo:
         main(["--help"])
     assert excinfo.value.code == 0
-    assert "webcam AI playground" in capsys.readouterr().out
+    out = capsys.readouterr().out
+    assert "virtual camera" in out and "mirrorlab cam" in out
 
 
 def test_unknown_command_exits_with_a_message(capsys):

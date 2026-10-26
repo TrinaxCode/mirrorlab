@@ -88,9 +88,8 @@ web/.vercel/
 Thumbs.db
 desktop.ini
 
-# ---------------------------------------------------------------------------
-# Legacy prototype
-# ---------------------------------------------------------------------------
-# The pre-2.0 single-file scripts are kept for reference but their captured
-# screenshots are large and add nothing to the repository.
-legacy/*.png
+# Scratch space for local experiments and profiling output
+.scratch/
+
+# Screenshots left over from the removed 1.x prototype may still exist locally.
+legacy/

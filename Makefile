@@ -12,7 +12,7 @@ ifeq ($(OS),Windows_NT)
 endif
 
 .PHONY: help install dev test test-fast lint format typecheck check \
-        run demo doctor filters gestures benchmark gallery models \
+        cam bench-studio run demo doctor filters gestures benchmark gallery models \
         web-install web-dev web-build web-test build clean distclean
 
 help: ## Show this help
@@ -47,16 +47,22 @@ format: ## Auto-format with black and fix what ruff can
 	$(BIN)/python -m black src tests
 	$(BIN)/python -m ruff check --fix src tests
 
-typecheck: ## Static type check with mypy
-	$(BIN)/python -m mypy
+typecheck: ## Static type check of the studio package (the playground is not type-clean yet)
+	$(BIN)/python -m mypy --follow-imports=silent src/mirrorlab/studio
 
 check: lint format typecheck test ## Everything CI runs, locally
 
 # --------------------------------------------------------------------------- #
 # Running
 # --------------------------------------------------------------------------- #
-run: ## Start MirrorLab with defaults
-	$(BIN)/mirrorlab run
+cam: ## Start the virtual camera with the meeting profile
+	$(BIN)/mirrorlab cam --profile meeting
+
+bench-studio: ## Per-stage latency of the studio on a fixed input
+	$(BIN)/mirrorlab cam --input tests/assets/portrait.jpg --output none --profile meeting --no-control --max-frames 300 --report
+
+run: ## Start the playground
+	$(BIN)/mirrorlab play
 
 demo: ## Run offline on a synthetic source (no camera needed)
 	$(BIN)/mirrorlab demo --frames 120

@@ -4,26 +4,26 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mirrorlab"
-version = "2.0.0"
-description = "MirrorLab — a cross-platform webcam AI playground: face expressions, hand gestures and real-time filters."
+version = "2.1.0"
+description = "A virtual camera for video calls with background blur, auto-framing, studio light and hand-gesture control. CPU only, runs locally."
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "MIT" }
 authors = [{ name = "TrinaxCode", email = "trinaxcode@users.noreply.github.com" }]
 keywords = [
+    "virtual-camera",
+    "webcam",
+    "background-blur",
+    "auto-framing",
+    "video-conferencing",
+    "gesture-control",
+    "hand-tracking",
     "mediapipe",
     "opencv",
-    "webcam",
-    "computer-vision",
-    "hand-tracking",
-    "face-mesh",
-    "gesture-recognition",
-    "facial-expression-recognition",
-    "real-time-filters",
-    "augmented-reality",
+    "privacy",
 ]
 classifiers = [
-    "Development Status :: 5 - Production/Stable",
+    "Development Status :: 4 - Beta",
     "Environment :: Console",
     "Intended Audience :: Developers",
     "Intended Audience :: Education",
@@ -38,6 +38,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Topic :: Multimedia :: Video :: Capture",
+    "Topic :: Communications :: Conferencing",
     "Topic :: Scientific/Engineering :: Image Recognition",
 ]
 
@@ -48,10 +49,13 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# GIF export (`--record` with the gif buffer, and the web demo's hero asset
-# workflow). Kept optional so the core install stays small.
+# GIF export for the playground's recorder. Optional so the core install stays small.
 gif = ["pillow>=10.0"]
 cli = ["rich>=13.0", "PyYAML>=6.0"]
+# Publishing the virtual camera needs pyvirtualcam, which is GPL-2.0. It is an
+# opt-in extra and is deliberately NOT part of `all`, so installing MirrorLab
+# never pulls a GPL package unless you ask for it by name.
+vcam = ["pyvirtualcam>=0.11"]
 dev = [
     "pytest>=7.4",
     "pytest-cov>=4.1",
@@ -77,6 +81,7 @@ mirrorlab = "mirrorlab.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/TrinaxCode/mirrorlab"
+Documentation = "https://github.com/TrinaxCode/mirrorlab/blob/main/docs/STUDIO.md"
 Repository = "https://github.com/TrinaxCode/mirrorlab"
 Issues = "https://github.com/TrinaxCode/mirrorlab/issues"
 Changelog = "https://github.com/TrinaxCode/mirrorlab/blob/main/CHANGELOG.md"
@@ -99,7 +104,8 @@ mirrorlab = ["data/models/*"]
 testpaths = ["tests"]
 addopts = "-q --strict-markers"
 markers = [
-    "slow: marks tests as slow",
+    "slow: marks tests as slow (real models, end-to-end)",
+    "gui: marks tests that need a display",
     "gpu: marks tests that need a GPU",
     "camera: marks tests that need a physical camera",
 ]
@@ -136,7 +142,7 @@ line-length = 110
 target-version = ["py39"]
 
 [tool.mypy]
-python_version = "3.9"
+python_version = "3.10"
 warn_unused_ignores = false
 ignore_missing_imports = true
 files = ["src/mirrorlab"]

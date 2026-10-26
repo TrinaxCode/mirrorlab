@@ -692,7 +692,13 @@ class BigEyesEffect(FaceEffect):
             scale = 1.0 - self.strength * influence
             map_x = cx + dx * scale
             map_y = cy + dy * scale
-        return cv2.remap(frame, map_x, map_y, cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
+        return cv2.remap(
+            frame,
+            map_x.astype(np.float32),
+            map_y.astype(np.float32),
+            cv2.INTER_LINEAR,
+            borderMode=cv2.BORDER_REFLECT,
+        )
 
 
 class GooglyEyesEffect(FaceEffect):

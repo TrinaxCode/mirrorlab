@@ -118,6 +118,12 @@ class PerceptionEngine:
         self.tracker = GestureTracker()
         self._expression_votes = SlidingWindow(maxlen=7)
         self._frame_index = 0
+        #: While no hand is visible, only look for one every Nth call. Searching for
+        #: a palm is the most expensive thing the hand model does; once a hand is
+        #: being tracked every call runs. 1 (the default) means always search.
+        self.hand_idle_stride = 1
+        self._hand_idle_calls = 0
+        self._hand_seen = False
         self._start = time.perf_counter()
 
     # -- capabilities ------------------------------------------------------ #
@@ -157,7 +163,10 @@ class PerceptionEngine:
         if self.config.enable_face:
             faces = self.face_detector.process(frame_bgr, timestamp_ms, rgb)
         if self.config.enable_hands:
-            hands = self.hand_detector.process(frame_bgr, timestamp_ms, rgb)
+            if self._hand_seen or self._hand_idle_calls % max(1, self.hand_idle_stride) == 0:
+                hands = self.hand_detector.process(frame_bgr, timestamp_ms, rgb)
+                self._hand_seen = bool(hands)
+            self._hand_idle_calls = 0 if self._hand_seen else self._hand_idle_calls + 1
 
         analysis = FrameAnalysis(
             faces=faces,
