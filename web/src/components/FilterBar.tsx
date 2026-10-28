@@ -15,18 +15,16 @@ export interface FilterBarProps {
  */
 export function FilterBar({ strings, lang, activeId, onSelect, onStep }: FilterBarProps) {
   return (
-    <div className="card p-3">
-      <div className="mb-2 flex items-center justify-between gap-2">
-        <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-          {strings.hud.filter}
-        </span>
-        <div className="flex items-center gap-1">
+    <div className="rounded-2xl bg-screen p-4 text-screen-ink">
+      <div className="mb-3 flex items-center justify-between gap-2">
+        <h3 className="text-base font-semibold">{strings.hud.filter}</h3>
+        <div className="flex items-center gap-1.5">
           <button
             type="button"
             onClick={() => onStep(-1)}
             aria-label={strings.controls.previous}
             title={strings.controls.previous}
-            className="grid h-8 w-8 place-items-center rounded-lg border border-white/10 bg-white/[0.04] text-slate-300 transition-colors hover:border-white/20 hover:text-white"
+            className="btn btn-screen btn-sm !min-h-10 !w-10 !px-0"
           >
             ←
           </button>
@@ -35,7 +33,7 @@ export function FilterBar({ strings, lang, activeId, onSelect, onStep }: FilterB
             onClick={() => onStep(1)}
             aria-label={strings.controls.next}
             title={strings.controls.next}
-            className="grid h-8 w-8 place-items-center rounded-lg border border-white/10 bg-white/[0.04] text-slate-300 transition-colors hover:border-white/20 hover:text-white"
+            className="btn btn-screen btn-sm !min-h-10 !w-10 !px-0"
           >
             →
           </button>
@@ -45,7 +43,7 @@ export function FilterBar({ strings, lang, activeId, onSelect, onStep }: FilterB
       <div
         role="listbox"
         aria-label={strings.hud.filter}
-        className="no-scrollbar flex gap-2 overflow-x-auto pb-1"
+        className="no-scrollbar flex gap-2 overflow-x-auto pb-2"
       >
         {FILTERS.map((filter) => {
           const active = filter.id === activeId;
@@ -57,10 +55,10 @@ export function FilterBar({ strings, lang, activeId, onSelect, onStep }: FilterB
               aria-selected={active}
               onClick={() => onSelect(filter.id)}
               title={lang === "es" ? filter.descriptionEs : filter.description}
-              className={`flex shrink-0 items-center gap-2 rounded-xl border px-3 py-2 text-sm whitespace-nowrap transition-colors ${
+              className={`flex min-h-10 shrink-0 items-center gap-2 rounded-full border px-4 text-sm font-medium whitespace-nowrap transition-colors ${
                 active
-                  ? "border-brand-teal/60 bg-brand-teal/10 text-white"
-                  : "border-white/10 bg-white/[0.03] text-slate-400 hover:border-white/20 hover:text-white"
+                  ? "border-screen-ink bg-screen-ink text-screen"
+                  : "border-screen-line text-screen-soft hover:border-screen-soft hover:text-screen-ink"
               }`}
             >
               <span aria-hidden="true">{filter.emoji}</span>
@@ -80,21 +78,22 @@ export interface FilterGalleryProps {
   onSelect: (id: string) => void;
 }
 
-/** The landing-page grid: every filter as a clickable card. */
+/** The landing-page list: every filter as a pressable row, in registry order. */
 export function FilterGallery({ strings, lang, activeId, onSelect }: FilterGalleryProps) {
   return (
-    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <ul className="grid border-t border-line sm:grid-cols-2 sm:gap-x-10">
       {FILTERS.map((filter) => (
-        <FilterCard
-          key={filter.id}
-          filter={filter}
-          lang={lang}
-          active={filter.id === activeId}
-          onSelect={onSelect}
-          strings={strings}
-        />
+        <li key={filter.id}>
+          <FilterCard
+            filter={filter}
+            lang={lang}
+            active={filter.id === activeId}
+            onSelect={onSelect}
+            strings={strings}
+          />
+        </li>
       ))}
-    </div>
+    </ul>
   );
 }
 
@@ -112,41 +111,31 @@ function FilterCard({ filter, lang, active, onSelect, strings }: FilterCardProps
       type="button"
       onClick={() => onSelect(filter.id)}
       aria-pressed={active}
-      className={`card group h-full p-4 text-left transition-all hover:-translate-y-0.5 hover:border-white/20 ${
-        active ? "border-brand-teal/60 bg-brand-teal/[0.06]" : ""
-      }`}
+      className="group flex w-full items-start gap-4 border-b border-line py-4 text-left transition-colors hover:bg-paper-deep"
     >
-      <div className="flex items-start gap-3">
-        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-white/10 bg-white/[0.04] text-xl">
-          {filter.emoji}
+      <span aria-hidden="true" className="w-9 shrink-0 text-center text-2xl leading-8">
+        {filter.emoji}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <span className="text-base font-semibold">{filterLabel(filter, lang)}</span>
+          {active ? (
+            <span className="rounded-full bg-tally px-2.5 py-0.5 text-xs font-semibold text-on-tally">
+              {strings.gallery.applied}
+            </span>
+          ) : null}
         </span>
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="font-semibold text-white">{filterLabel(filter, lang)}</span>
-            {active ? (
-              <span className="rounded-full bg-brand-teal/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-teal">
-                {strings.gallery.applied}
-              </span>
-            ) : null}
-          </div>
-          <p className="mt-1.5 text-sm leading-relaxed text-slate-400">
-            {lang === "es" ? filter.descriptionEs : filter.description}
-          </p>
-          <div className="mt-2 flex flex-wrap gap-2 text-[10px] uppercase tracking-wide text-slate-500">
-            <span className="rounded-full border border-white/10 px-2 py-0.5">{filter.category}</span>
-            {filter.animated ? (
-              <span className="rounded-full border border-brand-violet/30 px-2 py-0.5 text-brand-violet">
-                {strings.gallery.animated}
-              </span>
-            ) : null}
-            {filter.needsMask ? (
-              <span className="rounded-full border border-brand-teal/30 px-2 py-0.5 text-brand-teal">
-                {strings.gallery.mask}
-              </span>
-            ) : null}
-          </div>
-        </div>
-      </div>
+        <span className="mt-0.5 block text-sm leading-relaxed text-ink-soft">
+          {lang === "es" ? filter.descriptionEs : filter.description}
+        </span>
+        {filter.animated || filter.needsMask ? (
+          <span className="mt-1 block text-sm text-ink-soft">
+            {[filter.animated ? strings.gallery.animated : "", filter.needsMask ? strings.gallery.mask : ""]
+              .filter(Boolean)
+              .join(" · ")}
+          </span>
+        ) : null}
+      </span>
     </button>
   );
 }

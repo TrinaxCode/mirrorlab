@@ -474,8 +474,8 @@ export const GESTURES: readonly GestureDefinition[] = [
     description: "Thumb up, fist closed.",
     descriptionEs: "Pulgar arriba con el puño cerrado.",
     action: "snapshot",
-    actionLabel: "Saves a PNG snapshot",
-    actionLabelEs: "Guarda una captura PNG",
+    actionLabel: "Saves a snapshot to the tray",
+    actionLabelEs: "Guarda una captura en la bandeja",
   },
   {
     name: "thumbs_down",
@@ -737,8 +737,8 @@ export const DYNAMIC_GESTURES: readonly GestureDefinition[] = [
     description: "Fast straight displacement towards the top of the frame.",
     descriptionEs: "Desplazamiento rápido y recto hacia arriba.",
     action: "snapshot",
-    actionLabel: "Saves a PNG snapshot",
-    actionLabelEs: "Guarda una captura PNG",
+    actionLabel: "Saves a snapshot to the tray",
+    actionLabelEs: "Guarda una captura en la bandeja",
   },
   {
     name: "swipe_down",

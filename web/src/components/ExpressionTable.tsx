@@ -1,6 +1,6 @@
 import { EXPRESSIONS, RANKED_EXPRESSIONS } from "../lib/expressions";
 import type { Dict, Lang } from "../lib/i18n";
-import { DataTable, Section } from "./Section";
+import { DataTable, Disclosure } from "./Section";
 
 export interface ExpressionTableProps {
   strings: Dict;
@@ -13,11 +13,7 @@ export function ExpressionTable({ strings, lang }: ExpressionTableProps) {
   );
 
   return (
-    <Section
-      id="expressions"
-      title={strings.expressions.title}
-      subtitle={strings.expressions.subtitle}
-    >
+    <Disclosure id="expressions" title={strings.expressions.title} subtitle={strings.expressions.subtitle}>
       <DataTable
         columns={[
           strings.expressions.columns.emoji,
@@ -27,31 +23,29 @@ export function ExpressionTable({ strings, lang }: ExpressionTableProps) {
         caption={strings.expressions.title}
       >
         {rows.map((definition) => (
-          <tr key={definition.name} className="align-top transition-colors hover:bg-white/[0.03]">
+          <tr key={definition.name} className="align-top">
             <td className="w-16 px-4 py-3">
-              <span className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-white/[0.04] text-lg">
+              <span aria-hidden="true" className="text-2xl leading-none">
                 {definition.emoji}
               </span>
             </td>
             <td className="px-4 py-3">
-              <div className="font-medium text-white">
+              <div className="font-semibold">
                 {lang === "es" ? definition.labelEs : definition.label}
               </div>
-              <div className="text-xs text-slate-500">
+              <div className="text-sm text-ink-soft">
                 {lang === "es" ? definition.label : definition.labelEs}
               </div>
-              <code className="mt-1 inline-block rounded bg-white/[0.05] px-1.5 py-0.5 font-mono text-[11px] text-brand-violet">
-                {definition.name}
-              </code>
+              <code className="mt-1 inline-block rounded bg-paper-deep px-1.5 py-0.5 text-xs">{definition.name}</code>
             </td>
-            <td className="px-4 py-3 text-slate-300">
+            <td className="px-4 py-3">
               {lang === "es" ? definition.descriptionEs : definition.description}
             </td>
           </tr>
         ))}
       </DataTable>
 
-      <p className="mt-4 text-xs leading-relaxed text-slate-500">{strings.expressions.note}</p>
-    </Section>
+      <p className="mt-4 text-sm leading-relaxed text-ink-soft">{strings.expressions.note}</p>
+    </Disclosure>
   );
 }

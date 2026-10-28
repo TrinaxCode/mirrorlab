@@ -1,41 +1,87 @@
 @import "tailwindcss";
+/* One self-hosted variable font (weight + width axes), latin subset only. */
+@import "@fontsource-variable/bricolage-grotesque/wdth.css";
 
 /* ---------------------------------------------------------------------------
-   Design tokens. Tailwind v4 reads `@theme` and generates the matching
-   utilities, so `bg-ink-950` or `text-brand-teal` work everywhere below.
+   Design tokens.
+
+   The page is a studio desk: a pale monitor-bezel grey for the page, near-black
+   "screens" for everything that shows a picture, and one accent, the red of a
+   camera's tally light. Screens stay dark in both themes; only the desk flips.
 --------------------------------------------------------------------------- */
-@theme {
-  --color-ink-950: #05070d;
-  --color-ink-900: #090d17;
-  --color-ink-800: #0f1524;
-  --color-brand-teal: #5eead4;
-  --color-brand-violet: #a78bfa;
+:root {
+  --paper: #edefea;
+  --paper-deep: #e1e4dd;
+  --ink: #0f1214;
+  --ink-soft: #4b535a;
+  --line: #c8cdc5;
+  --tally: #d93a17;
+  --on-tally: #ffffff;
+
+  --screen: #0c0e10;
+  --screen-raised: #15191c;
+  --screen-line: #272d32;
+  --screen-ink: #e8ebe6;
+  --screen-soft: #8e979e;
+  --signal: #86efc0;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #0f1214;
+    --paper-deep: #161a1d;
+    --ink: #eceee9;
+    --ink-soft: #9ba4ab;
+    --line: #2a3036;
+    --tally: #ff5b38;
+    --on-tally: #0f1214;
+  }
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-deep: var(--paper-deep);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-line: var(--line);
+  --color-tally: var(--tally);
+  --color-on-tally: var(--on-tally);
+  --color-screen: var(--screen);
+  --color-screen-raised: var(--screen-raised);
+  --color-screen-line: var(--screen-line);
+  --color-screen-ink: var(--screen-ink);
+  --color-screen-soft: var(--screen-soft);
+  --color-signal: var(--signal);
   --font-sans:
-    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    "Bricolage Grotesque Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
 }
 
 @layer base {
   html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
+    color-scheme: light dark;
   }
 
   body {
-    background-color: var(--color-ink-950);
-    color: var(--color-slate-200, #e2e8f0);
+    background-color: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-optical-sizing: auto;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
 
   ::selection {
-    background-color: var(--color-brand-teal);
-    color: var(--color-ink-950);
+    background-color: var(--tally);
+    color: var(--on-tally);
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-brand-teal);
-    outline-offset: 2px;
+    outline: 2px solid var(--tally);
+    outline-offset: 3px;
+    border-radius: 4px;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -52,67 +98,132 @@
   }
 }
 
-@layer utilities {
-  /* Teal → violet gradient text, the project's signature accent. */
-  .text-gradient {
-    background-image: linear-gradient(100deg, #5eead4 0%, #7dd3fc 45%, #a78bfa 100%);
-    background-clip: text;
-    -webkit-background-clip: text;
-    color: transparent;
+@layer components {
+  /* Headlines: the width axis pulled in and the weight pushed up. */
+  .display {
+    font-stretch: 78%;
+    font-weight: 720;
+    letter-spacing: -0.015em;
+    line-height: 0.96;
+    text-wrap: balance;
   }
 
-  .accent-gradient {
-    background-image: linear-gradient(100deg, #5eead4 0%, #a78bfa 100%);
+  .heading {
+    font-stretch: 82%;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.02;
+    text-wrap: balance;
   }
 
-  .card {
-    border-radius: 1rem;
-    border: 1px solid color-mix(in oklab, white 8%, transparent);
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
-    backdrop-filter: blur(6px);
+  .measure {
+    max-width: 62ch;
+  }
+
+  /* A black "screen" in a soft bezel. Used for the hero preview and the live demo. */
+  .bezel {
+    border-radius: 1.5rem;
+    background: var(--screen);
+    padding: 0.5rem;
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--ink) 18%, transparent),
+      0 24px 48px -24px color-mix(in oklab, var(--ink) 55%, transparent);
+  }
+
+  .bezel > .glass {
+    border-radius: 1.1rem;
+    overflow: hidden;
+    position: relative;
+    background: var(--screen);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    padding: 0 1.25rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    line-height: 1;
+    transition:
+      background-color 160ms,
+      color 160ms,
+      border-color 160ms,
+      transform 160ms;
+  }
+
+  .btn-primary {
+    background: var(--tally);
+    color: var(--on-tally);
+  }
+  .btn-primary:hover {
+    background: color-mix(in oklab, var(--tally) 88%, var(--ink));
+  }
+
+  .btn-quiet {
+    border: 1px solid var(--line);
+    color: var(--ink);
+  }
+  .btn-quiet:hover {
+    border-color: var(--ink);
+  }
+
+  .btn-screen {
+    border: 1px solid var(--screen-line);
+    background: var(--screen-raised);
+    color: var(--screen-ink);
+  }
+  .btn-screen:hover:not(:disabled) {
+    border-color: var(--screen-soft);
+  }
+  .btn-screen:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .btn-sm {
+    min-height: 2.25rem;
+    padding: 0 0.9rem;
+    font-size: 0.8125rem;
+  }
+
+  .kbd {
+    display: inline-block;
+    min-width: 1.5rem;
+    padding: 0.1rem 0.4rem;
+    border: 1px solid currentColor;
+    border-radius: 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.3;
+    text-align: center;
+    opacity: 0.8;
   }
 
   .no-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
+    scrollbar-color: color-mix(in oklab, var(--ink) 30%, transparent) transparent;
   }
-
   .no-scrollbar::-webkit-scrollbar {
     height: 6px;
   }
-
   .no-scrollbar::-webkit-scrollbar-thumb {
-    background-color: rgba(148, 163, 184, 0.3);
+    background-color: color-mix(in oklab, var(--ink) 30%, transparent);
     border-radius: 9999px;
-  }
-
-  .grid-backdrop {
-    background-image:
-      linear-gradient(rgba(148, 163, 184, 0.06) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(148, 163, 184, 0.06) 1px, transparent 1px);
-    background-size: 48px 48px;
   }
 
   .animate-in {
     animation: ml-in 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-
-  .shimmer {
-    background: linear-gradient(
-      90deg,
-      rgba(94, 234, 212, 0) 0%,
-      rgba(94, 234, 212, 0.35) 50%,
-      rgba(167, 139, 250, 0) 100%
-    );
-    animation: ml-shimmer 1.6s linear infinite;
   }
 }
 
 @keyframes ml-in {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
@@ -120,11 +231,184 @@
   }
 }
 
-@keyframes ml-shimmer {
-  from {
-    transform: translateX(-100%);
+/* ---------------------------------------------------------------------------
+   The hero monitor: one 12 s loop that does what the product does. The scene
+   eases in on the face, a palm appears, its hold ring fills, the shutter closes;
+   then the same again to open it. All of it is keyframes on the same clock, so
+   the pieces can never drift apart. With reduced motion every layer sits at its
+   base state: palm visible, ring full, shutter open.
+--------------------------------------------------------------------------- */
+.mon-scene,
+.mon-hand,
+.mon-ring,
+.mon-shutter,
+.mon-live,
+.mon-covered {
+  transform-box: view-box;
+}
+
+.mon-scene {
+  transform-origin: 320px 190px;
+  animation: mon-zoom 12s ease-in-out infinite;
+}
+
+.mon-hand {
+  transform-origin: 470px 250px;
+  animation: mon-hand 12s ease-in-out infinite;
+}
+
+.mon-ring {
+  transform-origin: 472px 250px;
+  transform: rotate(-90deg);
+  stroke-dasharray: 553;
+  stroke-dashoffset: 0;
+  animation: mon-ring 12s linear infinite;
+}
+
+.mon-shutter {
+  opacity: 0;
+  animation: mon-shutter 12s ease-in-out infinite;
+}
+
+.mon-live {
+  animation: mon-live 12s steps(1, end) infinite;
+}
+
+.mon-covered {
+  opacity: 0;
+  animation: mon-covered 12s steps(1, end) infinite;
+}
+
+@keyframes mon-zoom {
+  0%,
+  8% {
+    transform: scale(1);
   }
-  to {
-    transform: translateX(100%);
+  20%,
+  84% {
+    transform: scale(1.07);
+  }
+  96%,
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes mon-hand {
+  0%,
+  15% {
+    opacity: 0;
+    transform: translate(24px, 40px);
+  }
+  20%,
+  34% {
+    opacity: 1;
+    transform: none;
+  }
+  37%,
+  50% {
+    opacity: 0;
+    transform: translate(24px, 40px);
+  }
+  52%,
+  55% {
+    opacity: 0;
+    transform: translate(24px, 40px);
+  }
+  58%,
+  68% {
+    opacity: 1;
+    transform: none;
+  }
+  71%,
+  100% {
+    opacity: 0;
+    transform: translate(24px, 40px);
+  }
+}
+
+@keyframes mon-ring {
+  0%,
+  20% {
+    stroke-dashoffset: 553;
+  }
+  34% {
+    stroke-dashoffset: 0;
+  }
+  34.01%,
+  55% {
+    stroke-dashoffset: 553;
+  }
+  55.01% {
+    stroke-dashoffset: 553;
+  }
+  68% {
+    stroke-dashoffset: 0;
+  }
+  68.01%,
+  100% {
+    stroke-dashoffset: 553;
+  }
+}
+
+@keyframes mon-shutter {
+  0%,
+  34% {
+    opacity: 0;
+  }
+  36.5%,
+  68% {
+    opacity: 1;
+  }
+  70.5%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes mon-live {
+  0%,
+  34.99% {
+    opacity: 1;
+  }
+  35%,
+  69.99% {
+    opacity: 0;
+  }
+  70%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes mon-covered {
+  0%,
+  34.99% {
+    opacity: 0;
+  }
+  35%,
+  69.99% {
+    opacity: 1;
+  }
+  70%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mon-ring,
+  .mon-hand,
+  .mon-scene,
+  .mon-shutter,
+  .mon-live,
+  .mon-covered {
+    animation: none;
+  }
+  .mon-live {
+    opacity: 1;
+  }
+  .mon-covered {
+    opacity: 0;
   }
 }

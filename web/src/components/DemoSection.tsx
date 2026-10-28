@@ -10,7 +10,11 @@ import { downloadBlob, snapshotFilename } from "../lib/site";
 import { CameraStage } from "./CameraStage";
 import { FilterBar } from "./FilterBar";
 import { Section } from "./Section";
+import { SnapshotTray, type TrayItem } from "./SnapshotTray";
 import { StatsPanel } from "./StatsPanel";
+
+const TRAY_LIMIT = 8;
+const TRAY_COOLDOWN_MS = 4000;
 
 export interface DemoSettings {
   overlay: boolean;
@@ -65,7 +69,10 @@ export function DemoSection(props: DemoSectionProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const filterCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const overlayCanvasRef = useRef<HTMLCanvasElement | null>(null);
-  const takeSnapshotRef = useRef<() => Promise<void>>(() => Promise.resolve());
+  const takeSnapshotRef = useRef<(mode: "download" | "tray") => Promise<void>>(() => Promise.resolve());
+  const lastTrayAt = useRef(0);
+  const trayRef = useRef<TrayItem[]>([]);
+  const [tray, setTray] = useState<TrayItem[]>([]);
 
   const camera = useCamera(videoRef);
   const live = camera.status === "live";
@@ -107,9 +114,16 @@ export function DemoSection(props: DemoSectionProps) {
         case "freeze":
           setFrozen((current) => !current);
           break;
-        case "snapshot":
-          void takeSnapshotRef.current();
+        case "snapshot": {
+          // A gesture must never start a download: a thumbs up is easy to make by
+          // accident. It adds to the in-page tray, at most once every few seconds.
+          const now = performance.now();
+          if (now - lastTrayAt.current >= TRAY_COOLDOWN_MS) {
+            lastTrayAt.current = now;
+            void takeSnapshotRef.current("tray");
+          }
           break;
+        }
         case "toggle_glitch":
           onSelectFilter(filterId === "glitch" ? "original" : "glitch");
           break;
@@ -136,16 +150,63 @@ export function DemoSection(props: DemoSectionProps) {
     onSoftError: handleSoftError,
   });
 
-  const takeSnapshot = useCallback(async () => {
-    const blob = await vision.captureSnapshot(settings.includeOverlay);
-    if (!blob) {
-      notify({ emoji: "⚠️", title: strings.toast.snapshotFailed });
-      return;
-    }
-    const filename = snapshotFilename();
-    downloadBlob(blob, filename);
-    notify({ emoji: "📸", title: strings.toast.snapshotSaved, detail: filename });
-  }, [notify, settings.includeOverlay, strings.toast.snapshotFailed, strings.toast.snapshotSaved, vision]);
+  const discardTrayItem = useCallback((id: number) => {
+    setTray((current) => {
+      const gone = current.find((item) => item.id === id);
+      if (gone) URL.revokeObjectURL(gone.url);
+      return current.filter((item) => item.id !== id);
+    });
+  }, []);
+
+  const clearTray = useCallback(() => {
+    setTray((current) => {
+      for (const item of current) URL.revokeObjectURL(item.url);
+      return [];
+    });
+  }, []);
+
+  useEffect(() => {
+    trayRef.current = tray;
+  }, [tray]);
+
+  // Free the picture memory when the demo goes away.
+  useEffect(
+    () => () => {
+      for (const item of trayRef.current) URL.revokeObjectURL(item.url);
+    },
+    [],
+  );
+
+  const takeSnapshot = useCallback(
+    async (mode: "download" | "tray" = "download") => {
+      const blob = await vision.captureSnapshot(settings.includeOverlay);
+      if (!blob) {
+        notify({ emoji: "⚠️", title: strings.toast.snapshotFailed });
+        return;
+      }
+      const filename = snapshotFilename();
+      if (mode === "download") {
+        downloadBlob(blob, filename);
+        notify({ emoji: "📸", title: strings.toast.snapshotSaved, detail: filename });
+        return;
+      }
+      const item: TrayItem = { id: Date.now(), url: URL.createObjectURL(blob), blob, filename, takenAt: new Date() };
+      setTray((current) => {
+        const next = [item, ...current];
+        for (const dropped of next.slice(TRAY_LIMIT)) URL.revokeObjectURL(dropped.url);
+        return next.slice(0, TRAY_LIMIT);
+      });
+      notify({ emoji: "📸", title: strings.toast.snapshotTray, detail: filename });
+    },
+    [
+      notify,
+      settings.includeOverlay,
+      strings.toast.snapshotFailed,
+      strings.toast.snapshotSaved,
+      strings.toast.snapshotTray,
+      vision,
+    ],
+  );
 
   // The gesture handler runs inside the animation loop, so it reaches the
   // snapshot function through a ref instead of a stale closure.
@@ -193,7 +254,7 @@ export function DemoSection(props: DemoSectionProps) {
           stepFilter(-1);
           break;
         case "s":
-          void takeSnapshot();
+          void takeSnapshot("download");
           break;
         case "f":
           if (live) setFrozen((current) => !current);
@@ -229,8 +290,8 @@ export function DemoSection(props: DemoSectionProps) {
   }, [live, onSelectFilter, onToggleLang, resetSettings, setSettings, stepFilter, takeSnapshot]);
 
   return (
-    <Section id="demo" title={strings.demo.title} subtitle={strings.demo.subtitle}>
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
+    <Section id="demo" title={strings.demo.title} subtitle={strings.demo.subtitle} wide>
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-5 lg:grid-cols-[minmax(0,1fr)_21rem]">
         <CameraStage
           strings={strings}
           videoRef={videoRef}
@@ -261,12 +322,10 @@ export function DemoSection(props: DemoSectionProps) {
           />
         </CameraStage>
 
-        <div className="flex flex-col gap-3">
-          <div className="card p-3">
-            <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">
-              {strings.controls.title}
-            </div>
-            <div className="flex flex-wrap gap-2">
+        <div className="flex flex-col gap-4">
+          <div className="rounded-2xl bg-screen p-4 text-screen-ink">
+            <h3 className="text-base font-semibold">{strings.controls.title}</h3>
+            <div className="mt-3 flex flex-wrap gap-2">
               <ControlButton
                 active={settings.overlay}
                 label={strings.controls.overlays}
@@ -300,52 +359,44 @@ export function DemoSection(props: DemoSectionProps) {
               />
             </div>
 
-            <div className="mt-3 flex flex-wrap items-center gap-2">
+            <div className="mt-4 flex flex-wrap items-center gap-2">
               <button
                 type="button"
-                onClick={() => void takeSnapshot()}
+                onClick={() => void takeSnapshot("download")}
                 disabled={!live}
-                className="rounded-xl accent-gradient px-3.5 py-2 text-sm font-semibold text-ink-950 transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
+                className="btn btn-primary btn-sm disabled:cursor-not-allowed disabled:opacity-45"
               >
-                📸 {strings.controls.snapshot}
+                {strings.controls.snapshot}
               </button>
               {live ? (
-                <button
-                  type="button"
-                  onClick={camera.stop}
-                  className="rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2 text-sm font-medium text-slate-300 transition-colors hover:border-white/20 hover:text-white"
-                >
+                <button type="button" onClick={camera.stop} className="btn btn-screen btn-sm">
                   {strings.demo.stop}
                 </button>
               ) : null}
-              <button
-                type="button"
-                onClick={resetSettings}
-                className="rounded-xl border border-white/10 bg-white/[0.04] px-3.5 py-2 text-sm font-medium text-slate-300 transition-colors hover:border-white/20 hover:text-white"
-              >
+              <button type="button" onClick={resetSettings} className="btn btn-screen btn-sm">
                 {strings.controls.reset}
               </button>
             </div>
 
-            <label className="mt-3 flex items-center gap-2 text-xs text-slate-400">
+            <label className="mt-4 flex items-center gap-2.5 text-sm text-screen-soft">
               <input
                 type="checkbox"
                 checked={settings.includeOverlay}
                 onChange={(event) =>
                   setSettings((current) => ({ ...current, includeOverlay: event.target.checked }))
                 }
-                className="h-4 w-4 rounded border-white/20 bg-transparent accent-teal-300"
+                className="h-4 w-4 rounded accent-[#ff5b38]"
               />
               {strings.controls.includeOverlay}
             </label>
 
             {live && camera.devices.length > 1 ? (
-              <label className="mt-3 flex items-center gap-2 text-xs text-slate-400">
-                <span className="shrink-0 uppercase tracking-wider">{strings.demo.cameraLabel}</span>
+              <label className="mt-4 flex items-center gap-3 text-sm text-screen-soft">
+                <span className="shrink-0">{strings.demo.cameraLabel}</span>
                 <select
                   value={camera.deviceId ?? ""}
                   onChange={(event) => camera.selectDevice(event.target.value)}
-                  className="w-full rounded-lg border border-white/10 bg-ink-800 px-2 py-1.5 text-sm text-slate-200 outline-none"
+                  className="min-h-10 w-full rounded-lg border border-screen-line bg-screen-raised px-2 text-sm text-screen-ink"
                 >
                   {camera.devices.map((device) => (
                     <option key={device.deviceId} value={device.deviceId}>
@@ -356,6 +407,8 @@ export function DemoSection(props: DemoSectionProps) {
               </label>
             ) : null}
           </div>
+
+          <SnapshotTray strings={strings} items={tray} onDiscard={discardTrayItem} onClear={clearTray} />
 
           <StatsPanel
             strings={strings}
@@ -371,21 +424,17 @@ export function DemoSection(props: DemoSectionProps) {
           />
 
           {live ? (
-            <div className="card p-3">
-              <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">
-                {strings.gestureGuide.title}
-              </div>
-              <ul className="flex flex-col gap-1.5 text-xs text-slate-400">
+            <div className="rounded-2xl bg-screen p-4 text-screen-ink">
+              <h3 className="text-base font-semibold">{strings.gestureGuide.title}</h3>
+              <ul className="mt-3 flex flex-col gap-2 text-sm">
                 {["peace", "thumbs_up", "ok", "fist", "swipe_right"].map((name) => {
                   const definition = findGesture(name);
                   if (!definition) return null;
                   return (
-                    <li key={name} className="flex items-center gap-2">
+                    <li key={name} className="flex items-center gap-2.5">
                       <span aria-hidden="true">{definition.emoji}</span>
-                      <span className="text-slate-300">
-                        {lang === "es" ? definition.labelEs : definition.label}
-                      </span>
-                      <span className="ml-auto text-right text-slate-500">
+                      <span>{lang === "es" ? definition.labelEs : definition.label}</span>
+                      <span className="ml-auto text-right text-screen-soft">
                         {lang === "es" ? definition.actionLabelEs : definition.actionLabel}
                       </span>
                     </li>
@@ -415,20 +464,14 @@ function ControlButton({ active, label, shortcut, disabled = false, onClick }: C
       onClick={onClick}
       disabled={disabled}
       aria-pressed={active}
-      className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
+      className={`inline-flex min-h-10 items-center gap-2 rounded-full border px-3.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-45 ${
         active
-          ? "border-brand-teal/60 bg-brand-teal/10 text-white"
-          : "border-white/10 bg-white/[0.03] text-slate-400 hover:border-white/20 hover:text-white"
+          ? "border-screen-ink bg-screen-ink text-screen"
+          : "border-screen-line text-screen-soft hover:border-screen-soft hover:text-screen-ink"
       }`}
     >
-      <span
-        aria-hidden="true"
-        className={`h-1.5 w-1.5 rounded-full ${active ? "bg-brand-teal" : "bg-slate-600"}`}
-      />
       {label}
-      <kbd className="rounded border border-white/10 bg-black/20 px-1 font-mono text-[10px] text-slate-400">
-        {shortcut}
-      </kbd>
+      <span className="kbd !px-1.5 !py-0 !text-[11px]">{shortcut}</span>
     </button>
   );
 }

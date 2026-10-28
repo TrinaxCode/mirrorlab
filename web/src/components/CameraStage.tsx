@@ -70,8 +70,9 @@ export function CameraStage(props: CameraStageProps) {
   const progress = stage ? STAGE_PROGRESS[stage] : 0;
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-white/10 bg-ink-900">
+    <div className="flex min-w-0 flex-col gap-4">
+      <div className="bezel">
+      <div className="glass aspect-video w-full">
         {/* Kept in the layout (not `display:none`) so the decoder never throttles. */}
         <video
           ref={videoRef}
@@ -97,7 +98,7 @@ export function CameraStage(props: CameraStageProps) {
         />
 
         {!live ? (
-          <div className="absolute inset-0 grid place-items-center bg-ink-950/85 p-4 sm:p-8">
+          <div className="absolute inset-0 grid place-items-center bg-screen/90 p-4 sm:p-8">
             <CameraPermission
               strings={strings}
               error={error}
@@ -112,22 +113,22 @@ export function CameraStage(props: CameraStageProps) {
         ) : null}
 
         {live ? (
-          <div className="pointer-events-none absolute inset-x-3 bottom-3 flex flex-wrap items-center gap-2 text-[11px]">
-            <span className="rounded-full border border-white/10 bg-ink-950/70 px-2.5 py-1 font-medium text-slate-300 backdrop-blur">
+          <div className="pointer-events-none absolute inset-x-3 bottom-3 flex flex-wrap items-center gap-2 text-xs">
+            <span className="rounded-full bg-black/55 px-3 py-1.5 font-medium text-screen-ink backdrop-blur-sm">
               🖐️ {handsCount} {strings.demo.handsBadge}
             </span>
             {frozen ? (
-              <span className="rounded-full border border-brand-violet/40 bg-brand-violet/15 px-2.5 py-1 font-semibold text-brand-violet backdrop-blur">
+              <span className="rounded-full bg-tally px-3 py-1.5 font-semibold text-on-tally">
                 {strings.demo.frozenBadge}
               </span>
             ) : null}
             {mirrored ? (
-              <span className="rounded-full border border-white/10 bg-ink-950/70 px-2.5 py-1 font-medium text-slate-300 backdrop-blur">
+              <span className="rounded-full bg-black/55 px-3 py-1.5 font-medium text-screen-ink backdrop-blur-sm">
                 {strings.demo.mirrorBadge}
               </span>
             ) : null}
             {!overlayEnabled ? (
-              <span className="rounded-full border border-white/10 bg-ink-950/70 px-2.5 py-1 font-medium text-slate-400 backdrop-blur">
+              <span className="rounded-full bg-black/55 px-3 py-1.5 font-medium text-screen-soft backdrop-blur-sm">
                 {strings.demo.overlayHidden}
               </span>
             ) : null}
@@ -135,14 +136,14 @@ export function CameraStage(props: CameraStageProps) {
         ) : null}
 
         {loadingModels ? (
-          <div className="absolute inset-x-0 top-0 border-b border-white/10 bg-ink-950/85 px-4 py-3 backdrop-blur">
-            <div className="flex items-center justify-between text-xs text-slate-300">
+          <div className="absolute inset-x-0 top-0 bg-screen/90 px-4 py-3 backdrop-blur">
+            <div className="flex items-center justify-between text-sm text-screen-ink">
               <span>{strings.demo.loadingModels}</span>
-              <span className="font-mono text-slate-500">{progress}%</span>
+              <span className="tabular-nums text-screen-soft">{progress}%</span>
             </div>
-            <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/10">
+            <div className="mt-2 h-1 overflow-hidden rounded-full bg-screen-line">
               <div
-                className="h-full rounded-full accent-gradient transition-[width] duration-500"
+                className="h-full rounded-full bg-tally transition-[width] duration-500"
                 style={{ width: `${progress}%` }}
               />
             </div>
@@ -153,7 +154,7 @@ export function CameraStage(props: CameraStageProps) {
           <div className="absolute inset-x-3 top-3 rounded-xl border border-amber-400/30 bg-amber-400/10 p-3 text-xs text-amber-100 backdrop-blur">
             <p className="font-semibold">{strings.vision.errorTitle}</p>
             <p className="mt-1 text-amber-100/80">{strings.vision.errorBody}</p>
-            <p className="mt-1 font-mono text-[10px] break-all text-amber-200/70">{modelError}</p>
+            <p className="mt-1 text-xs break-all text-amber-200/70">{modelError}</p>
             <button
               type="button"
               onClick={onRetryModels}
@@ -168,9 +169,10 @@ export function CameraStage(props: CameraStageProps) {
           <div className="absolute inset-x-3 top-3 rounded-xl border border-rose-400/30 bg-rose-500/10 p-3 text-xs text-rose-100 backdrop-blur">
             <p className="font-semibold">{strings.webgl.title}</p>
             <p className="mt-1 text-rose-100/80">{strings.webgl.body}</p>
-            <p className="mt-1 font-mono text-[10px] break-all text-rose-200/70">{webglError}</p>
+            <p className="mt-1 text-xs break-all text-rose-200/70">{webglError}</p>
           </div>
         ) : null}
+      </div>
       </div>
 
       {children}

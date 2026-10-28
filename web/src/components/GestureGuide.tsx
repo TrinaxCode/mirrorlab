@@ -1,6 +1,6 @@
 import { DYNAMIC_GESTURES, GESTURES, type GestureDefinition } from "../lib/gestures";
 import type { Dict, Lang } from "../lib/i18n";
-import { DataTable, Section } from "./Section";
+import { DataTable, Disclosure } from "./Section";
 
 export interface GestureGuideProps {
   strings: Dict;
@@ -23,24 +23,22 @@ function Rows({ gestures, lang }: { gestures: readonly GestureDefinition[]; lang
   return (
     <>
       {gestures.map((gesture) => (
-        <tr key={gesture.name} className="align-top transition-colors hover:bg-white/[0.03]">
+        <tr key={gesture.name} className="align-top">
           <td className="w-16 px-4 py-3">
-            <span className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-white/[0.04] text-lg">
+            <span aria-hidden="true" className="text-2xl leading-none">
               {gesture.emoji}
             </span>
           </td>
           <td className="px-4 py-3">
-            <div className="font-medium text-white">{label(gesture, lang)}</div>
-            <div className="text-xs text-slate-500">{otherLabel(gesture, lang)}</div>
-            <code className="mt-1 inline-block rounded bg-white/[0.05] px-1.5 py-0.5 font-mono text-[11px] text-brand-teal">
-              {gesture.name}
-            </code>
+            <div className="font-semibold">{label(gesture, lang)}</div>
+            <div className="text-sm text-ink-soft">{otherLabel(gesture, lang)}</div>
+            <code className="mt-1 inline-block rounded bg-paper-deep px-1.5 py-0.5 text-xs">{gesture.name}</code>
           </td>
           <td className="px-4 py-3">
-            <div className={gesture.action ? "text-slate-200" : "text-slate-500"}>
+            <div className={gesture.action ? "" : "text-ink-soft"}>
               {actionLabel(gesture, lang)}
             </div>
-            <div className="mt-1 text-xs text-slate-500">
+            <div className="mt-1 text-sm text-ink-soft">
               {lang === "es" ? gesture.descriptionEs : gesture.description}
             </div>
           </td>
@@ -52,7 +50,7 @@ function Rows({ gestures, lang }: { gestures: readonly GestureDefinition[]; lang
 
 export function GestureGuide({ strings, lang }: GestureGuideProps) {
   return (
-    <Section id="gestures" title={strings.gestureGuide.title} subtitle={strings.gestureGuide.subtitle}>
+    <Disclosure id="gestures" title={strings.gestureGuide.title} subtitle={strings.gestureGuide.subtitle}>
       <DataTable
         columns={[
           strings.gestureGuide.columns.emoji,
@@ -64,7 +62,7 @@ export function GestureGuide({ strings, lang }: GestureGuideProps) {
         <Rows gestures={GESTURES} lang={lang} />
       </DataTable>
 
-      <h3 className="mb-4 mt-10 text-lg font-semibold text-white">{strings.gestureGuide.dynamicTitle}</h3>
+      <h4 className="mb-4 mt-10 text-lg font-semibold">{strings.gestureGuide.dynamicTitle}</h4>
       <DataTable
         columns={[
           strings.gestureGuide.columns.emoji,
@@ -76,7 +74,7 @@ export function GestureGuide({ strings, lang }: GestureGuideProps) {
         <Rows gestures={DYNAMIC_GESTURES} lang={lang} />
       </DataTable>
 
-      <p className="mt-4 text-xs leading-relaxed text-slate-500">{strings.gestureGuide.note}</p>
-    </Section>
+      <p className="mt-4 text-sm leading-relaxed text-ink-soft">{strings.gestureGuide.note}</p>
+    </Disclosure>
   );
 }

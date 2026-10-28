@@ -11,7 +11,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Nothing yet. New work lands here before it is released.
+- Web: a snapshot tray. Snapshots taken with a gesture are kept in the page until you press
+  Download.
+
+### Changed
+
+- Web: the landing page was redesigned around the virtual camera (animated hero, features,
+  gesture hold times, install steps for Linux, macOS and Windows, a privacy summary), with a
+  light and a dark theme and a single self-hosted font.
+- Web: the demo's picture, controls, filters and stats use the same design system.
+
+### Fixed
+
+- Web: a thumbs up or a swipe up used to download a PNG every time it was recognised, so a
+  casual gesture could trigger a stream of downloads. Gestures now only add to the tray, at
+  most once every four seconds; the button and the `S` key still download immediately.
+- Web: the page overflowed horizontally on phones because of the camera canvas's intrinsic width.
 
 ## [2.1.0] - 2026-10-26
 

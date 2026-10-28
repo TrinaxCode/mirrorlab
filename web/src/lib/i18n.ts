@@ -18,30 +18,165 @@ const es = {
   switchLabel: "Cambiar a inglés",
   nav: {
     demo: "Demo",
+    features: "Qué hace",
+    control: "Gestos",
+    install: "Instalar",
     filters: "Filtros",
     gestures: "Gestos",
     expressions: "Expresiones",
     shortcuts: "Atajos",
+    reference: "Referencia",
     repo: "GitHub",
   },
   hero: {
-    badge: "Sin servidor · tu cámara nunca sale del navegador",
-    title: "MirrorLab",
-    kicker: "Laboratorio de visión en el navegador",
-    pitch: "Lee tu cara y tus manos con la webcam y los convierte en filtros en tiempo real. 52 blendshapes faciales, 21 puntos por mano y 21 filtros WebGL ejecutándose en tu dispositivo.",
-    ctaPrimary: "Abrir la demo",
-    ctaSecondary: "Ver cómo funciona",
-    stats: [
-      { value: "52", label: "blendshapes" },
-      { value: "21", label: "gestos" },
-      { value: "21", label: "filtros WebGL" },
-      { value: "0", label: "peticiones al servidor" },
+    title: "Cierra la cámara con la mano abierta.",
+    kicker: "Cámara virtual con control por gestos",
+    pitch:
+      "MirrorLab es una cámara virtual para Zoom, Meet y Teams. Desenfoca el fondo, te mantiene encuadrado y se controla con las manos, sin buscar el teclado en mitad de la reunión.",
+    ctaPrimary: "Probar en el navegador",
+    ctaSecondary: "Instalar en el escritorio",
+    commandLabel: "Así se arranca",
+    copy: "Copiar",
+    copied: "Copiado",
+    caption: "Mantén la palma 1,6 segundos para cubrir la cámara. Otra vez para abrirla.",
+    monitor: {
+      label: "Vista previa animada de MirrorLab: fondo desenfocado, encuadre y una palma que cubre la cámara",
+      live: "En vivo",
+      covered: "Cámara cubierta",
+      hold: "Palma · 1,6 s",
+      source: "MirrorLab Virtual Camera",
+      blur: "Fondo desenfocado",
+      frame: "Encuadre",
+      light: "Luz",
+    },
+  },
+  features: {
+    title: "Qué hace",
+    subtitle:
+      "Cuatro ajustes que corrigen lo que suele salir mal en una videollamada, y un obturador para cuando necesitas desaparecer.",
+    items: [
+      {
+        name: "Fondo",
+        body: "Desenfoque, una imagen tuya, croma verde o negro. La máscara de la persona se suaviza en el tiempo para que el contorno no tiemble.",
+        readout: "blur · replace · green · black",
+      },
+      {
+        name: "Encuadre",
+        body: "Un paneo y un zoom suaves mantienen tu cara en el tercio superior. Ignora los movimientos pequeños y vuelve al plano completo cuando te levantas.",
+        readout: "zoom hasta 1,8×",
+      },
+      {
+        name: "Luz",
+        body: "La exposición se mide sobre tu cara, no sobre toda la imagen: una ventana a tu espalda ya no te deja a oscuras.",
+        readout: "medida en la cara",
+      },
+      {
+        name: "Obturador",
+        body: "Cubre la imagen cuando quieras, con un gesto o solo, tras unos segundos sin nadie delante.",
+        readout: "palma · ctl privacy · --away-after",
+      },
+      {
+        name: "Reacciones",
+        body: "Un pulgar, un corazón o un ok flotan sobre tu imagen para el resto de participantes.",
+        readout: "pulgar · corazón · ok",
+      },
     ],
   },
-  demo: {
-    title: "La demo",
+  control: {
+    title: "Se controla con las manos",
     subtitle:
-      "Enciende la cámara y mueve las manos: los gestos controlan la interfaz. Nada se sube a ningún sitio, todo el procesamiento ocurre en tu equipo.",
+      "Cada gesto tiene que mantenerse un rato antes de actuar. Uno hecho mientras hablas no dispara nada.",
+    holdUnit: "s",
+    holdLabel: "Tiempo que hay que mantenerlo",
+    rows: [
+      { emoji: "🖐️", gesture: "Palma abierta", hold: 1.6, action: "Cubre o descubre la cámara" },
+      { emoji: "✌️", gesture: "Paz", hold: 1.0, action: "Pasa al siguiente fondo" },
+      { emoji: "👍", gesture: "Pulgar arriba", hold: 0.6, action: "Lanza un pulgar sobre tu imagen" },
+      { emoji: "🤟", gesture: "Te quiero", hold: 0.6, action: "Lanza un corazón" },
+      { emoji: "👌", gesture: "OK", hold: 0.6, action: "Lanza un ok" },
+    ],
+    alt: "Sin manos libres: mirrorlab ctl privacy desde otra terminal o desde un atajo de teclado hace lo mismo que la palma.",
+  },
+  privacy: {
+    title: "Qué sale de tu equipo",
+    subtitle: "Casi nada. Esto es todo lo que ocurre en la red.",
+    facts: [
+      {
+        title: "El vídeo no se sube",
+        body: "La cámara se lee en tu navegador y se procesa en tu CPU o GPU. No hay ningún servidor que reciba la imagen.",
+      },
+      {
+        title: "Los modelos se bajan una vez",
+        body: "Unos 11 MB desde la CDN de MediaPipe, solo cuando enciendes la cámara. El navegador los guarda en caché.",
+      },
+      {
+        title: "Las capturas no se descargan solas",
+        body: "Se quedan en la bandeja de la página hasta que pulses Descargar.",
+      },
+      {
+        title: "Sin cuentas ni seguimiento",
+        body: "Esta página no pide registro ni incluye analítica o cookies de seguimiento.",
+      },
+    ],
+  },
+  install: {
+    title: "Instálalo en el escritorio",
+    subtitle:
+      "Python 3.9 a 3.12, solo CPU. Windows y macOS necesitan OBS para tener un dispositivo de cámara; Linux usa v4l2loopback.",
+    tabsLabel: "Sistema operativo",
+    copy: "Copiar",
+    copied: "Copiado",
+    notOnPypi: "Todavía no está en PyPI: se instala desde el código fuente.",
+    docs: "Guía completa de la cámara virtual",
+    platforms: [
+      {
+        id: "linux",
+        name: "Linux",
+        steps: [
+          { title: "Crea el dispositivo de cámara", code: "sudo apt install v4l2loopback-dkms libegl1 libgles2\nsudo modprobe v4l2loopback devices=1 video_nr=10 card_label=\"MirrorLab\" exclusive_caps=1" },
+          { title: "Instala MirrorLab", code: "git clone https://github.com/TrinaxCode/mirrorlab.git && cd mirrorlab\npython3 -m venv .venv && source .venv/bin/activate\npip install -e \".[vcam]\"" },
+          { title: "Comprueba y arranca", code: "mirrorlab doctor\nmirrorlab cam --profile meeting --device /dev/video10" },
+        ],
+      },
+      {
+        id: "macos",
+        name: "macOS",
+        steps: [
+          { title: "Prepara OBS una sola vez", body: "Instala OBS Studio 30 o superior, ábrelo, pulsa «Iniciar cámara virtual», luego «Detener» y ciérralo." },
+          { title: "Instala MirrorLab", code: "git clone https://github.com/TrinaxCode/mirrorlab.git && cd mirrorlab\npython3 -m venv .venv && source .venv/bin/activate\npip install -e \".[vcam]\"" },
+          { title: "Comprueba y arranca", code: "mirrorlab doctor\nmirrorlab cam --profile meeting", body: "Tu terminal necesita permiso de cámara. Cierra OBS mientras MirrorLab funciona." },
+        ],
+      },
+      {
+        id: "windows",
+        name: "Windows",
+        steps: [
+          { title: "Instala OBS Studio", body: "Su instalador registra el dispositivo «OBS Virtual Camera»." },
+          { title: "Instala MirrorLab", code: "git clone https://github.com/TrinaxCode/mirrorlab.git\ncd mirrorlab\npy -m venv .venv\n.venv\\Scripts\\activate\npip install -e \".[vcam]\"" },
+          { title: "Comprueba y arranca", code: "mirrorlab doctor\nmirrorlab cam --profile meeting", body: "No uses la cámara virtual de OBS a la vez." },
+        ],
+      },
+    ],
+  },
+  reference: {
+    title: "Referencia de la demo",
+    subtitle: "Todos los gestos, expresiones y atajos que reconoce la demo del navegador.",
+    show: "Mostrar",
+    hide: "Ocultar",
+  },
+  tray: {
+    title: "Capturas",
+    empty: "Las capturas que hagas con un gesto se guardan aquí. Nada se descarga solo.",
+    download: "Descargar",
+    discard: "Descartar",
+    clear: "Vaciar bandeja",
+    alt: "Captura hecha el",
+  },
+  demo: {
+    invite: "Los modelos (unos 11 MB) se descargan solo cuando enciendes la cámara y se quedan en la caché del navegador.",
+    title: "Pruébalo en el navegador",
+    subtitle:
+      "La misma detección de cara y manos que usa la versión de escritorio, más 21 filtros WebGL. La cámara virtual necesita el escritorio: aquí solo te ves a ti mismo.",
     start: "Encender cámara",
     retry: "Reintentar",
     stop: "Apagar cámara",
@@ -108,7 +243,7 @@ const es = {
     hud: "Panel de estadísticas",
     freeze: "Congelar imagen",
     mirror: "Vista espejo",
-    snapshot: "Guardar captura",
+    snapshot: "Descargar captura",
     includeOverlay: "Incluir superposición en la captura",
     reset: "Restablecer ajustes",
     next: "Siguiente filtro",
@@ -117,7 +252,8 @@ const es = {
   },
   toast: {
     filterChanged: "Filtro",
-    snapshotSaved: "Captura guardada",
+    snapshotSaved: "Captura descargada",
+    snapshotTray: "Captura en la bandeja",
     snapshotFailed: "No se pudo guardar la captura",
     overlayOn: "Superposición activada",
     overlayOff: "Superposición desactivada",
@@ -126,27 +262,6 @@ const es = {
     languageChanged: "Idioma: Español",
     settingsReset: "Ajustes restablecidos",
     gesture: "Gesto detectado",
-  },
-  how: {
-    title: "Cómo funciona",
-    subtitle: "Tres pasos, cero servidores. El navegador hace todo el trabajo pesado.",
-    steps: [
-      {
-        emoji: "🎥",
-        title: "1. Captura el fotograma",
-        body: "getUserMedia entrega el vídeo a un <video> oculto. Cada fotograma se sube a la GPU como textura, sin copiarlo a JavaScript.",
-      },
-      {
-        emoji: "🧠",
-        title: "2. Infiere con MediaPipe",
-        body: "FaceLandmarker devuelve 478 puntos y 52 blendshapes; HandLandmarker, 21 puntos por mano. Los clasificadores geométricos convierten eso en expresiones y gestos.",
-      },
-      {
-        emoji: "🎨",
-        title: "3. Dibuja el resultado",
-        body: "Un shader WebGL2 compone el filtro activo en el canvas inferior y un canvas 2D transparente dibuja encima el esqueleto, el rostro y el HUD.",
-      },
-    ],
   },
   gallery: {
     title: "Galería de filtros",
@@ -190,7 +305,7 @@ const es = {
   },
   footer: {
     tagline:
-      "MirrorLab es software libre: el mismo motor de expresiones, gestos y filtros vive también en una aplicación de escritorio en Python.",
+      "MirrorLab es software libre (MIT). La aplicación de escritorio publica la cámara virtual; esta página es una demo en el navegador.",
     repo: "Ver el repositorio en GitHub",
     license: "Licencia MIT",
     privacy: "Privacidad: el vídeo nunca sale del navegador.",
@@ -215,30 +330,165 @@ const en: Dict = {
   switchLabel: "Switch to Spanish",
   nav: {
     demo: "Demo",
+    features: "Features",
+    control: "Gestures",
+    install: "Install",
     filters: "Filters",
     gestures: "Gestures",
     expressions: "Expressions",
     shortcuts: "Shortcuts",
+    reference: "Reference",
     repo: "GitHub",
   },
   hero: {
-    badge: "No server · your camera never leaves the browser",
-    title: "MirrorLab",
-    kicker: "A computer-vision lab in your browser",
-    pitch: "Reads your face and hands from the webcam and turns them into real-time filters. 52 facial blendshapes, 21 points per hand and 21 WebGL filters running on your own device.",
-    ctaPrimary: "Open the demo",
-    ctaSecondary: "See how it works",
-    stats: [
-      { value: "52", label: "blendshapes" },
-      { value: "21", label: "gestures" },
-      { value: "21", label: "WebGL filters" },
-      { value: "0", label: "server round-trips" },
+    title: "Close the camera with an open hand.",
+    kicker: "A virtual camera you control with gestures",
+    pitch:
+      "MirrorLab is a virtual camera for Zoom, Meet and Teams. It blurs your background, keeps you framed and is driven by your hands, so you never hunt for the keyboard mid-meeting.",
+    ctaPrimary: "Try it in the browser",
+    ctaSecondary: "Install on desktop",
+    commandLabel: "How it starts",
+    copy: "Copy",
+    copied: "Copied",
+    caption: "Hold your palm for 1.6 seconds to cover the camera. Again to open it.",
+    monitor: {
+      label: "Animated MirrorLab preview: blurred background, framing and a palm covering the camera",
+      live: "Live",
+      covered: "Camera covered",
+      hold: "Palm · 1.6 s",
+      source: "MirrorLab Virtual Camera",
+      blur: "Blurred background",
+      frame: "Framing",
+      light: "Light",
+    },
+  },
+  features: {
+    title: "What it does",
+    subtitle:
+      "Four adjustments for what usually goes wrong on a video call, and a shutter for when you need to disappear.",
+    items: [
+      {
+        name: "Background",
+        body: "Blur, an image of your own, green screen or black. The person mask is smoothed over time so the outline does not shimmer.",
+        readout: "blur · replace · green · black",
+      },
+      {
+        name: "Framing",
+        body: "A smooth pan and zoom keep your face in the upper third. It ignores small movements and eases back to the full frame when you stand up.",
+        readout: "zoom up to 1.8×",
+      },
+      {
+        name: "Light",
+        body: "Exposure is metered on your face, not on the whole picture, so a window behind you no longer leaves you dark.",
+        readout: "metered on the face",
+      },
+      {
+        name: "Shutter",
+        body: "Cover the picture whenever you want, with a gesture, or automatically after a few seconds with nobody in front.",
+        readout: "palm · ctl privacy · --away-after",
+      },
+      {
+        name: "Reactions",
+        body: "A thumbs up, a heart or an ok float over your picture for everyone else on the call.",
+        readout: "thumb · heart · ok",
+      },
     ],
   },
-  demo: {
-    title: "The demo",
+  control: {
+    title: "Driven by your hands",
     subtitle:
-      "Turn the camera on and move your hands: gestures drive the interface. Nothing is uploaded anywhere, all processing happens on your machine.",
+      "Every gesture has to be held for a moment before it acts. One you make while talking triggers nothing.",
+    holdUnit: "s",
+    holdLabel: "How long to hold it",
+    rows: [
+      { emoji: "🖐️", gesture: "Open palm", hold: 1.6, action: "Covers or uncovers the camera" },
+      { emoji: "✌️", gesture: "Peace", hold: 1.0, action: "Switches to the next background" },
+      { emoji: "👍", gesture: "Thumbs up", hold: 0.6, action: "Floats a thumbs up over your picture" },
+      { emoji: "🤟", gesture: "I love you", hold: 0.6, action: "Floats a heart" },
+      { emoji: "👌", gesture: "OK", hold: 0.6, action: "Floats an ok" },
+    ],
+    alt: "Hands busy? mirrorlab ctl privacy from another terminal, or from a keyboard shortcut, does the same as the palm.",
+  },
+  privacy: {
+    title: "What leaves your machine",
+    subtitle: "Almost nothing. This is everything that happens on the network.",
+    facts: [
+      {
+        title: "Video is never uploaded",
+        body: "The camera is read in your browser and processed on your CPU or GPU. No server receives the picture.",
+      },
+      {
+        title: "Models download once",
+        body: "About 11 MB from the MediaPipe CDN, only when you turn the camera on. Your browser caches them.",
+      },
+      {
+        title: "Snapshots do not download themselves",
+        body: "They stay in the page's tray until you press Download.",
+      },
+      {
+        title: "No accounts, no tracking",
+        body: "This page asks for no sign-up and includes no analytics or tracking cookies.",
+      },
+    ],
+  },
+  install: {
+    title: "Install it on your desktop",
+    subtitle:
+      "Python 3.9 to 3.12, CPU only. Windows and macOS need OBS to provide a camera device; Linux uses v4l2loopback.",
+    tabsLabel: "Operating system",
+    copy: "Copy",
+    copied: "Copied",
+    notOnPypi: "Not on PyPI yet: install it from source.",
+    docs: "Full virtual camera guide",
+    platforms: [
+      {
+        id: "linux",
+        name: "Linux",
+        steps: [
+          { title: "Create the camera device", code: "sudo apt install v4l2loopback-dkms libegl1 libgles2\nsudo modprobe v4l2loopback devices=1 video_nr=10 card_label=\"MirrorLab\" exclusive_caps=1" },
+          { title: "Install MirrorLab", code: "git clone https://github.com/TrinaxCode/mirrorlab.git && cd mirrorlab\npython3 -m venv .venv && source .venv/bin/activate\npip install -e \".[vcam]\"" },
+          { title: "Check and start", code: "mirrorlab doctor\nmirrorlab cam --profile meeting --device /dev/video10" },
+        ],
+      },
+      {
+        id: "macos",
+        name: "macOS",
+        steps: [
+          { title: "Set up OBS once", body: "Install OBS Studio 30 or later, open it, click “Start Virtual Camera”, then “Stop”, and quit." },
+          { title: "Install MirrorLab", code: "git clone https://github.com/TrinaxCode/mirrorlab.git && cd mirrorlab\npython3 -m venv .venv && source .venv/bin/activate\npip install -e \".[vcam]\"" },
+          { title: "Check and start", code: "mirrorlab doctor\nmirrorlab cam --profile meeting", body: "Your terminal needs camera permission. Keep OBS closed while MirrorLab runs." },
+        ],
+      },
+      {
+        id: "windows",
+        name: "Windows",
+        steps: [
+          { title: "Install OBS Studio", body: "Its installer registers the “OBS Virtual Camera” device." },
+          { title: "Install MirrorLab", code: "git clone https://github.com/TrinaxCode/mirrorlab.git\ncd mirrorlab\npy -m venv .venv\n.venv\\Scripts\\activate\npip install -e \".[vcam]\"" },
+          { title: "Check and start", code: "mirrorlab doctor\nmirrorlab cam --profile meeting", body: "Do not run OBS's own virtual camera at the same time." },
+        ],
+      },
+    ],
+  },
+  reference: {
+    title: "Demo reference",
+    subtitle: "Every gesture, expression and shortcut the browser demo recognises.",
+    show: "Show",
+    hide: "Hide",
+  },
+  tray: {
+    title: "Snapshots",
+    empty: "Snapshots taken with a gesture are kept here. Nothing downloads on its own.",
+    download: "Download",
+    discard: "Discard",
+    clear: "Clear tray",
+    alt: "Snapshot taken at",
+  },
+  demo: {
+    invite: "The models (about 11 MB) download only when you turn the camera on, and stay in your browser cache.",
+    title: "Try it in the browser",
+    subtitle:
+      "The same face and hand detection the desktop version uses, plus 21 WebGL filters. The virtual camera needs the desktop app: here you only see yourself.",
     start: "Turn camera on",
     retry: "Try again",
     stop: "Turn camera off",
@@ -303,7 +553,7 @@ const en: Dict = {
     hud: "Stats panel",
     freeze: "Freeze frame",
     mirror: "Mirror view",
-    snapshot: "Save snapshot",
+    snapshot: "Download snapshot",
     includeOverlay: "Include overlay in the snapshot",
     reset: "Reset settings",
     next: "Next filter",
@@ -312,7 +562,8 @@ const en: Dict = {
   },
   toast: {
     filterChanged: "Filter",
-    snapshotSaved: "Snapshot saved",
+    snapshotSaved: "Snapshot downloaded",
+    snapshotTray: "Snapshot in the tray",
     snapshotFailed: "The snapshot could not be saved",
     overlayOn: "Overlay on",
     overlayOff: "Overlay off",
@@ -321,27 +572,6 @@ const en: Dict = {
     languageChanged: "Language: English",
     settingsReset: "Settings reset",
     gesture: "Gesture detected",
-  },
-  how: {
-    title: "How it works",
-    subtitle: "Three steps, zero servers. The browser does all the heavy lifting.",
-    steps: [
-      {
-        emoji: "🎥",
-        title: "1. Grab the frame",
-        body: "getUserMedia feeds a hidden <video>. Every frame is uploaded to the GPU as a texture, never copied into JavaScript.",
-      },
-      {
-        emoji: "🧠",
-        title: "2. Infer with MediaPipe",
-        body: "FaceLandmarker returns 478 points plus 52 blendshapes; HandLandmarker returns 21 points per hand. Geometric classifiers turn that into expressions and gestures.",
-      },
-      {
-        emoji: "🎨",
-        title: "3. Draw the result",
-        body: "A WebGL2 shader composites the active filter on the bottom canvas while a transparent 2D canvas draws the skeleton, the face mesh and the HUD on top.",
-      },
-    ],
   },
   gallery: {
     title: "Filter gallery",
@@ -385,7 +615,7 @@ const en: Dict = {
   },
   footer: {
     tagline:
-      "MirrorLab is free software: the same expression, gesture and filter engine also lives in a Python desktop application.",
+      "MirrorLab is free software (MIT). The desktop app publishes the virtual camera; this page is a browser demo.",
     repo: "View the repository on GitHub",
     license: "MIT licensed",
     privacy: "Privacy: the video never leaves the browser.",

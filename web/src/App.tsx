@@ -7,7 +7,11 @@ import { Footer } from "./components/Footer";
 import { GestureGuide } from "./components/GestureGuide";
 import { Header } from "./components/Header";
 import { Hero } from "./components/Hero";
-import { HowItWorks } from "./components/HowItWorks";
+import { Features } from "./components/Features";
+import { Control } from "./components/Control";
+import { Install } from "./components/Install";
+import { Privacy } from "./components/Privacy";
+import { Reference } from "./components/Reference";
 import { Section } from "./components/Section";
 import { ShortcutsTable } from "./components/ShortcutsTable";
 import { ToastHost } from "./components/Toast";
@@ -63,10 +67,10 @@ export default function App() {
   );
 
   return (
-    <div className="min-h-screen bg-ink-950">
+    <div className="min-h-screen bg-paper text-ink">
       <a
         href="#demo"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-white focus:px-3 focus:py-2 focus:text-sm focus:text-ink-950"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-ink focus:px-4 focus:py-2 focus:text-sm focus:text-paper"
       >
         {strings.nav.demo}
       </a>
@@ -75,6 +79,10 @@ export default function App() {
 
       <main>
         <Hero strings={strings} />
+
+        <Features strings={strings} />
+
+        <Control strings={strings} />
 
         <DemoSection
           strings={strings}
@@ -85,15 +93,19 @@ export default function App() {
           notify={push}
         />
 
-        <HowItWorks strings={strings} />
-
         <Section id="filters" title={strings.gallery.title} subtitle={strings.gallery.subtitle}>
           <FilterGallery strings={strings} lang={lang} activeId={filterId} onSelect={selectFilter} />
         </Section>
 
-        <GestureGuide strings={strings} lang={lang} />
-        <ExpressionTable strings={strings} lang={lang} />
-        <ShortcutsTable strings={strings} />
+        <Privacy strings={strings} />
+
+        <Install strings={strings} />
+
+        <Reference strings={strings}>
+          <GestureGuide strings={strings} lang={lang} />
+          <ExpressionTable strings={strings} lang={lang} />
+          <ShortcutsTable strings={strings} />
+        </Reference>
       </main>
 
       <Footer strings={strings} />
