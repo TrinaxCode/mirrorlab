@@ -233,23 +233,17 @@
 
 /* ---------------------------------------------------------------------------
    The hero monitor: one 12 s loop that does what the product does. The scene
-   eases in on the face, a palm appears, its hold ring fills, the shutter closes;
+   shows a palm, , its hold ring fills, the shutter closes;
    then the same again to open it. All of it is keyframes on the same clock, so
    the pieces can never drift apart. With reduced motion every layer sits at its
    base state: palm visible, ring full, shutter open.
 --------------------------------------------------------------------------- */
-.mon-scene,
 .mon-hand,
 .mon-ring,
 .mon-shutter,
 .mon-live,
 .mon-covered {
   transform-box: view-box;
-}
-
-.mon-scene {
-  transform-origin: 320px 190px;
-  animation: mon-zoom 12s ease-in-out infinite;
 }
 
 .mon-hand {
@@ -277,21 +271,6 @@
 .mon-covered {
   opacity: 0;
   animation: mon-covered 12s steps(1, end) infinite;
-}
-
-@keyframes mon-zoom {
-  0%,
-  8% {
-    transform: scale(1);
-  }
-  20%,
-  84% {
-    transform: scale(1.07);
-  }
-  96%,
-  100% {
-    transform: scale(1);
-  }
 }
 
 @keyframes mon-hand {
@@ -399,7 +378,6 @@
 @media (prefers-reduced-motion: reduce) {
   .mon-ring,
   .mon-hand,
-  .mon-scene,
   .mon-shutter,
   .mon-live,
   .mon-covered {

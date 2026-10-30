@@ -54,9 +54,9 @@ new perception models — this milestone is about the edges around what already 
 - [x] **Reachability audit.** `blink` was added to the blendshape scorer table and the
       priority list so it can actually win, and the inert `push`/`pull` entries were removed
       from `GestureTracker.SWIPES`. The registries now only advertise what fires.
-- [ ] **Model integrity hashes.** `_is_probably_valid()` checks size and rejects HTML, but
-      there is no checksum. Publish a SHA-256 per model in the `MODELS` table and verify it
-      after download.
+- [x] **Model integrity hashes.** Every model in the `MODELS` table pins a SHA-256 that is checked
+      before the file enters the cache. A mismatch discards the download; `MIRRORLAB_MODEL_VERIFY=0`
+      is the explicit escape hatch for a new upstream version.
 - [x] **Test suite.** 441 pure-logic tests across config, geometry, gestures, expressions,
       filters, effects, the CLI and the end-to-end pipeline. No camera, no network, no display.
 - [ ] **Recording quality pass.** Expose `gif_fps`, `gif_max_frames` and `max_queue` as

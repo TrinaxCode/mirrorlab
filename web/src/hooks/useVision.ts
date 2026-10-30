@@ -24,7 +24,7 @@ import type { Lang } from "../lib/i18n";
 import { drawOverlay, type OverlayBadge } from "../lib/overlay";
 import { FilterRenderer, WebGLUnavailableError } from "../lib/renderer";
 import { LandmarkSmoother } from "../lib/smoothing";
-import { VisionEngine, type VisionStage } from "../lib/vision";
+import type { VisionEngine, VisionStage } from "../lib/vision";
 
 export interface GestureEvent {
   name: string;
@@ -162,11 +162,17 @@ export function useVision(options: UseVisionOptions): UseVisionResult {
     let cancelled = false;
     // `onProgress` fires for every stage, including the first one, so the
     // initial "loading" state comes from the engine itself.
-    VisionEngine.create({
-      onProgress: (progress) => {
-        if (!cancelled) setStage(progress.stage);
-      },
-    })
+    // MediaPipe is the heaviest part of the bundle and is useless until the camera
+    // is on, so it is fetched on demand instead of with the landing page.
+    import("../lib/vision")
+      .then(({ VisionEngine: Engine }) => {
+        if (!cancelled) setStage("wasm");
+        return Engine.create({
+          onProgress: (progress) => {
+            if (!cancelled) setStage(progress.stage);
+          },
+        });
+      })
       .then((created) => {
         if (cancelled) {
           created.close();

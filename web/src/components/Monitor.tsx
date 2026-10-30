@@ -65,7 +65,7 @@ export function Monitor({ strings }: MonitorProps) {
             </defs>
 
             <g clipPath="url(#mon-clip)">
-              <g className="mon-scene">
+              <g>
                 {/* The room, blurred: what the other people on the call see behind you. */}
                 <g filter="url(#mon-blur)">
                   <rect x="-20" y="-20" width="680" height="400" fill="#2a3138" />
@@ -102,7 +102,17 @@ export function Monitor({ strings }: MonitorProps) {
                   <path d="M394 214 V240 H368" />
                 </g>
               </g>
+            </g>
+          </svg>
 
+          {/* Animated layer on its own SVG so the blurred room above is painted once. */}
+          <svg
+            viewBox="0 0 640 360"
+            aria-hidden="true"
+            className="absolute inset-0 block h-full w-full"
+            preserveAspectRatio="xMidYMid slice"
+          >
+            <g clipPath="url(#mon-clip)">
               {/* The hand, with its landmarks and the hold ring. */}
               <g className="mon-hand">
                 <g fill="none" stroke={SKIN} strokeWidth="20" strokeLinecap="round" strokeLinejoin="round">
@@ -156,7 +166,7 @@ export function Monitor({ strings }: MonitorProps) {
           </svg>
 
           {/* Status line, like the overlay on a call tile. */}
-          <div className="pointer-events-none absolute left-3 top-3 flex items-center gap-2 rounded-full bg-black/55 px-3 py-1.5 text-xs font-semibold text-screen-ink backdrop-blur-sm">
+          <div className="pointer-events-none absolute left-3 top-3 flex items-center gap-2 rounded-full bg-black/70 px-3 py-1.5 text-xs font-semibold text-screen-ink ">
             <span className="relative grid h-2.5 w-2.5 place-items-center" aria-hidden="true">
               <span className="mon-live absolute h-2.5 w-2.5 rounded-full bg-tally" />
               <span className="mon-covered absolute h-2.5 w-2.5 rounded-full bg-screen-soft" />
@@ -168,7 +178,7 @@ export function Monitor({ strings }: MonitorProps) {
           </div>
           <ul className="pointer-events-none absolute bottom-3 left-3 flex flex-wrap gap-1.5 text-[11px] font-medium text-screen-ink">
             {[copy.blur, copy.frame, copy.light].map((chip) => (
-              <li key={chip} className="rounded-full bg-black/55 px-2.5 py-1 backdrop-blur-sm">
+              <li key={chip} className="rounded-full bg-black/70 px-2.5 py-1 ">
                 {chip}
               </li>
             ))}

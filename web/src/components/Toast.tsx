@@ -9,6 +9,7 @@ export interface ToastHostProps {
 export function ToastHost({ toasts, onDismiss, label }: ToastHostProps) {
   return (
     <div
+      role="status"
       aria-live="polite"
       aria-label={label}
       className="pointer-events-none fixed inset-x-0 bottom-4 z-50 flex flex-col items-center gap-2 px-4 sm:inset-x-auto sm:bottom-6 sm:right-6 sm:items-end"

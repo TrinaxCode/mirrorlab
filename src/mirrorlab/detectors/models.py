@@ -17,6 +17,7 @@ Dropping a file into *any* of those locations makes MirrorLab fully offline.
 
 from __future__ import annotations
 
+import hashlib
 import os
 import shutil
 import sys
@@ -31,6 +32,7 @@ from ..utils.logging import get_logger
 
 __all__ = [
     "MODELS",
+    "ModelIntegrityError",
     "ModelSpec",
     "download_model",
     "ensure_model",
@@ -55,6 +57,8 @@ class ModelSpec:
     url: str
     size_mb: float
     purpose: str
+    #: SHA-256 of the file as served by ``url``. Empty disables the check.
+    sha256: str = ""
 
     def describe(self) -> str:
         return f"{self.filename} ({self.size_mb:.1f} MB) — {self.purpose}"
@@ -67,6 +71,7 @@ MODELS: Dict[str, ModelSpec] = {
         url=f"{_BASE}/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
         size_mb=3.7,
         purpose="478 face landmarks + 52 expression blendshapes",
+        sha256="64184e229b263107bc2b804c6625db1341ff2bb731874b0bcc2fe6544e0bc9ff",
     ),
     "hand_landmarker": ModelSpec(
         key="hand_landmarker",
@@ -74,6 +79,7 @@ MODELS: Dict[str, ModelSpec] = {
         url=f"{_BASE}/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task",
         size_mb=7.8,
         purpose="21 hand landmarks per hand + handedness",
+        sha256="fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1",
     ),
     "gesture_recognizer": ModelSpec(
         key="gesture_recognizer",
@@ -81,6 +87,7 @@ MODELS: Dict[str, ModelSpec] = {
         url=f"{_BASE}/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task",
         size_mb=8.4,
         purpose="MediaPipe's canned 7-gesture classifier (optional cross-check)",
+        sha256="97952348cf6a6a4915c2ea1496b4b37ebabc50cbbf80571435643c455f2b0482",
     ),
     "selfie_segmenter": ModelSpec(
         key="selfie_segmenter",
@@ -88,6 +95,7 @@ MODELS: Dict[str, ModelSpec] = {
         url=f"{_BASE}/image_segmenter/selfie_segmenter/float16/latest/selfie_segmenter.tflite",
         size_mb=0.25,
         purpose="person/background mask for background blur & replacement",
+        sha256="191ac9529ae506ee0beefa6b2c945a172dab9d07d1e802a290a4e4038226658b",
     ),
     "selfie_multiclass": ModelSpec(
         key="selfie_multiclass",
@@ -95,6 +103,7 @@ MODELS: Dict[str, ModelSpec] = {
         url=f"{_BASE}/image_segmenter/selfie_multiclass_256x256/float32/latest/selfie_multiclass_256x256.tflite",
         size_mb=16.0,
         purpose="6-class segmentation: hair, skin, clothes, background…",
+        sha256="c6748b1253a99067ef71f7e26ca71096cd449baefa8f101900ea23016507e0e0",
     ),
     "yunet_face": ModelSpec(
         key="yunet_face",
@@ -105,6 +114,7 @@ MODELS: Dict[str, ModelSpec] = {
         ),
         size_mb=0.23,
         purpose="tiny OpenCV face detector — the no-MediaPipe fallback (5 landmarks)",
+        sha256="8f2383e4dd3cfbb4553ea8718107fc0423210dc964f9f4280604804ed2552fa4",
     ),
     "pose_landmarker": ModelSpec(
         key="pose_landmarker",
@@ -112,6 +122,7 @@ MODELS: Dict[str, ModelSpec] = {
         url=f"{_BASE}/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task",
         size_mb=5.5,
         purpose="33 body landmarks (optional full-body mode)",
+        sha256="59929e1d1ee95287735ddd833b19cf4ac46d29bc7afddbbf6753c459690d574a",
     ),
 }
 
@@ -183,8 +194,28 @@ def find_model(key: str) -> Optional[Path]:
     return None
 
 
-def _download(url: str, target: Path, timeout: float = 120.0) -> Path:
-    """Stream ``url`` into ``target`` atomically (download to a temp file first)."""
+class ModelIntegrityError(OSError):
+    """A downloaded model does not match its pinned SHA-256."""
+
+
+def _verification_enabled() -> bool:
+    return os.environ.get("MIRRORLAB_MODEL_VERIFY", "1").strip().lower() not in {"0", "false", "no", "off"}
+
+
+def _sha256_of(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _download(url: str, target: Path, timeout: float = 120.0, sha256: str = "") -> Path:
+    """Stream ``url`` into ``target`` atomically (download to a temp file first).
+
+    When ``sha256`` is given the file is checked before it replaces ``target``, so a
+    corrupted or tampered download never lands in the cache.
+    """
     target.parent.mkdir(parents=True, exist_ok=True)
     request = urllib.request.Request(url, headers={"User-Agent": "mirrorlab"})
     with urllib.request.urlopen(request, timeout=timeout) as response:
@@ -195,6 +226,11 @@ def _download(url: str, target: Path, timeout: float = 120.0) -> Path:
     if total and temp_path.stat().st_size < total * 0.9:
         temp_path.unlink(missing_ok=True)
         raise OSError(f"Truncated download for {url} ({temp_path.stat().st_size}/{total} bytes)")
+    if sha256 and _verification_enabled():
+        actual = _sha256_of(temp_path)
+        if actual != sha256.lower():
+            temp_path.unlink(missing_ok=True)
+            raise ModelIntegrityError(f"SHA-256 mismatch for {url}\n  expected {sha256}\n  got      {actual}")
     temp_path.replace(target)
     return target
 
@@ -222,7 +258,13 @@ def download_model(
     notify = progress or (lambda message: log.info("%s", message))
     notify(f"Downloading {spec.describe()} …")
     try:
-        _download(spec.url, target)
+        _download(spec.url, target, sha256=spec.sha256)
+    except ModelIntegrityError as exc:
+        raise ModelIntegrityError(
+            f"The {key} model did not match its pinned checksum and was discarded.\n  {exc}\n"
+            f"  The file may have been corrupted in transit, or upstream may have published a new\n"
+            f"  version. If you trust the source, set MIRRORLAB_MODEL_VERIFY=0 to skip the check."
+        ) from exc
     except (urllib.error.URLError, OSError, TimeoutError) as exc:
         raise OSError(
             f"Could not download the {key} model from {spec.url}\n"
@@ -270,6 +312,7 @@ def list_model_status() -> List[dict]:
                 "cached": found is not None,
                 "path": str(found) if found else "",
                 "url": spec.url,
+                "sha256": spec.sha256,
             }
         )
     return rows

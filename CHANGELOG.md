@@ -14,8 +14,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Web: a snapshot tray. Snapshots taken with a gesture are kept in the page until you press
   Download.
 
+- Model downloads are verified against a pinned SHA-256 before they enter the cache. A mismatch
+  discards the file instead of caching it; `MIRRORLAB_MODEL_VERIFY=0` skips the check.
+- Web: `robots.txt`.
+
 ### Changed
 
+- Web: MediaPipe now loads only when the camera is turned on. The initial JavaScript went from
+  505 kB to 358 kB (gzip 157 kB to 113 kB).
+- Web: the hero animation no longer re-rasterises its blurred background on every frame. Lighthouse
+  (mobile profile): performance 68 to 96, total blocking time 1.9 s to 170 ms, accessibility 100,
+  SEO 100.
+- The deploy workflow skips with a notice when the Vercel secrets are not set, instead of failing.
 - Web: the landing page was redesigned around the virtual camera (animated hero, features,
   gesture hold times, install steps for Linux, macOS and Windows, a privacy summary), with a
   light and a dark theme and a single self-hosted font.
