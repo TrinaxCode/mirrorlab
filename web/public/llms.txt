@@ -1,0 +1,21 @@
+# MirrorLab
+
+> A free, open-source virtual camera for video calls. It blurs or replaces your background, keeps you framed, corrects the light on your face and is controlled with hand gestures. It runs on the CPU on your own computer (Windows, macOS and Linux) and does not upload video. Created by TrinaxCode.
+
+## Key facts
+
+- Works as a camera in Zoom, Google Meet, Microsoft Teams, Discord and OBS.
+- Desktop app for Windows, macOS and Linux; also a command-line tool (`pip install mirrorlab`).
+- Open palm held 1.6 s covers the camera; peace sign changes background; thumbs-up, heart and OK send reactions.
+- Everything is processed locally. The only download is ~12 MB of MediaPipe vision models, verified with SHA-256.
+- Licence: MIT for the source code. The packaged installers include pyvirtualcam (GPL-2.0).
+- A virtual camera device is needed by the operating system: OBS Studio on Windows and macOS, v4l2loopback on Linux.
+
+## Links
+
+- [Website (Spanish)](https://mirrorlabapp.web.app/)
+- [Website (English)](https://mirrorlabapp.web.app/en/)
+- [Downloads](https://github.com/TrinaxCode/mirrorlab/releases/latest)
+- [Source code](https://github.com/TrinaxCode/mirrorlab)
+- [Studio documentation](https://github.com/TrinaxCode/mirrorlab/blob/main/docs/STUDIO.md)
+- [Author: TrinaxCode](https://github.com/TrinaxCode)

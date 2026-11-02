@@ -1,20 +1,17 @@
-name: Deploy web demo
+name: Deploy web (Firebase Hosting)
 
 on:
   push:
     branches: [main]
     paths:
       - "web/**"
+      - "firebase.json"
+      - ".firebaserc"
       - ".github/workflows/deploy-web.yml"
   workflow_dispatch:
-    inputs:
-      production:
-        description: "Deploy to production"
-        type: boolean
-        default: true
 
 # A deploy must never be cancelled mid-flight, so unlike CI this group does not
-# cancel in progress — a queued deploy is fine, a half-finished one is not.
+# cancel in progress: a queued deploy is fine, a half-finished one is not.
 concurrency:
   group: deploy-web-${{ github.ref }}
   cancel-in-progress: false
@@ -24,13 +21,10 @@ permissions:
 
 jobs:
   deploy:
-    name: Vercel (production)
+    name: Firebase Hosting (production)
     runs-on: ubuntu-latest
     timeout-minutes: 20
     environment: production
-    defaults:
-      run:
-        working-directory: web
     steps:
       - uses: actions/checkout@v4
 
@@ -40,44 +34,46 @@ jobs:
           cache: npm
           cache-dependency-path: web/package-lock.json
 
-      - run: npm ci
-      - run: npm run typecheck
-      - run: npm test -- --run
-      - run: npm run build
+      - name: Build and test the site
+        working-directory: web
+        run: |
+          npm ci
+          npm run lint
+          npm run typecheck
+          npm test
+          npm run build
 
-      # Requires three repository secrets: VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID.
-      # Without them the deploy is skipped with a notice instead of failing the run,
-      # so a fork or a fresh clone does not get a red X on every push.
-      - name: Check Vercel credentials
+      # Needs one repository secret: FIREBASE_SERVICE_ACCOUNT, the JSON key of a service
+      # account with the "Firebase Hosting Admin" role. Without it the deploy is skipped
+      # with a notice instead of failing, so a fork or a fresh clone does not get a red X.
+      - name: Check Firebase credentials
         id: creds
         env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
-          if [ -z "$VERCEL_TOKEN" ]; then
-            echo "::notice::VERCEL_TOKEN is not set, skipping the deploy. Add VERCEL_TOKEN, VERCEL_ORG_ID and VERCEL_PROJECT_ID in Settings > Secrets and variables > Actions."
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT" ]; then
+            echo "::notice::FIREBASE_SERVICE_ACCOUNT is not set, skipping the deploy. Add it in Settings > Secrets and variables > Actions."
             echo "enabled=false" >> "$GITHUB_OUTPUT"
           else
             echo "enabled=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Deploy
-        id: deploy
         if: steps.creds.outputs.enabled == 'true'
         env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
-          npx vercel@latest pull --yes --environment=production --token="$VERCEL_TOKEN"
-          npx vercel@latest build --prod --token="$VERCEL_TOKEN"
-          url=$(npx vercel@latest deploy --prebuilt --prod --yes --token="$VERCEL_TOKEN")
-          echo "url=$url" >> "$GITHUB_OUTPUT"
-          echo "### Deployed to $url" >> "$GITHUB_STEP_SUMMARY"
+          key="$RUNNER_TEMP/firebase-key.json"
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$key"
+          export GOOGLE_APPLICATION_CREDENTIALS="$key"
+          trap 'rm -f "$key"' EXIT
+          npx --yes firebase-tools@latest deploy --only hosting --project mirrorlabapp --non-interactive
 
       - name: Smoke-test the deployment
         if: steps.creds.outputs.enabled == 'true'
         run: |
-          url="${{ steps.deploy.outputs.url }}"
-          code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "$url")
-          echo "$url → HTTP $code"
-          test "$code" = "200"
+          for path in / /en/ /sitemap.xml /robots.txt; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "https://mirrorlabapp.web.app$path")
+            echo "$path -> HTTP $code"
+            test "$code" = "200"
+          done

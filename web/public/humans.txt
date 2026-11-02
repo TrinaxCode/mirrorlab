@@ -1,0 +1,8 @@
+/* TEAM */
+Creator: TrinaxCode
+Site: https://github.com/TrinaxCode
+
+/* SITE */
+Standards: HTML5, CSS3, WebGL2, WebAssembly
+Components: React, Vite, Tailwind CSS, MediaPipe Tasks Vision
+Hosting: Firebase Hosting

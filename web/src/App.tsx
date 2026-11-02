@@ -1,6 +1,8 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { DemoSection } from "./components/DemoSection";
+import { Download } from "./components/Download";
+import { Faq } from "./components/Faq";
 import { ExpressionTable } from "./components/ExpressionTable";
 import { FilterGallery } from "./components/FilterBar";
 import { Footer } from "./components/Footer";
@@ -18,13 +20,37 @@ import { ToastHost } from "./components/Toast";
 import { STORAGE_KEYS, useLocalStorage } from "./hooks/useLocalStorage";
 import { useToasts } from "./hooks/useToasts";
 import { DEFAULT_FILTER_ID, FILTER_BY_ID, filterLabel, getFilter } from "./lib/filters";
-import { STRINGS, coerceLang, nextLang, type Lang } from "./lib/i18n";
-import { SITE_NAME } from "./lib/site";
+import { STRINGS, coerceLang, langFromPath, nextLang, pathForLang, type Lang } from "./lib/i18n";
+import { applySeo } from "./lib/seo-client";
+
+/** Keep the address bar in step with the language, without adding history entries. */
+function replacePath(lang: Lang): void {
+  try {
+    const target = pathForLang(lang);
+    if (window.location.pathname !== target) {
+      window.history.replaceState(window.history.state, "", `${target}${window.location.hash}`);
+    }
+  } catch {
+    // A sandboxed frame may refuse history changes; the language still switches.
+  }
+}
 
 export default function App() {
-  const [lang, setLang] = useLocalStorage<Lang>(STORAGE_KEYS.lang, "es", {
+  const [storedLang, setStoredLang] = useLocalStorage<Lang>(STORAGE_KEYS.lang, "es", {
     parse: (value) => coerceLang(value),
   });
+  // `/en/` is the English page and wins over the stored choice, so a shared link
+  // always shows the language it was published in. `/` follows the stored choice.
+  const [pathLang, setPathLang] = useState<Lang | null>(langFromPath);
+  const lang = pathLang ?? storedLang;
+  const setLang = useCallback(
+    (next: Lang) => {
+      setStoredLang(next);
+      setPathLang(next);
+      replacePath(next);
+    },
+    [setStoredLang],
+  );
   const [filterId, setFilterId] = useLocalStorage<string>(STORAGE_KEYS.filter, DEFAULT_FILTER_ID, {
     parse: (value) => (typeof value === "string" && FILTER_BY_ID.has(value) ? value : null),
   });
@@ -33,9 +59,8 @@ export default function App() {
   const strings = STRINGS[lang];
 
   useEffect(() => {
-    document.documentElement.lang = strings.htmlLang;
-    document.title = `${SITE_NAME} — ${strings.hero.kicker}`;
-  }, [strings]);
+    applySeo(strings, lang);
+  }, [strings, lang]);
 
   const selectLang = useCallback(
     (next: Lang) => {
@@ -46,12 +71,8 @@ export default function App() {
   );
 
   const toggleLang = useCallback(() => {
-    setLang((current) => {
-      const next = nextLang(current);
-      push({ emoji: "🌐", title: STRINGS[next].toast.languageChanged });
-      return next;
-    });
-  }, [push, setLang]);
+    selectLang(nextLang(lang));
+  }, [lang, selectLang]);
 
   /** Single entry point for filter changes, so every path announces itself. */
   const selectFilter = useCallback(
@@ -80,6 +101,8 @@ export default function App() {
       <main>
         <Hero strings={strings} />
 
+        <Download strings={strings} />
+
         <Features strings={strings} />
 
         <Control strings={strings} />
@@ -100,6 +123,8 @@ export default function App() {
         <Privacy strings={strings} />
 
         <Install strings={strings} />
+
+        <Faq strings={strings} />
 
         <Reference strings={strings}>
           <GestureGuide strings={strings} lang={lang} />

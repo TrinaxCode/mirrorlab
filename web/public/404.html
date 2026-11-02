@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <meta name="color-scheme" content="light dark" />
+    <title>404 · MirrorLab</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <style>
+      :root { --bg: #edefea; --ink: #0f1214; --soft: #4b535a; --tally: #d93a17; }
+      @media (prefers-color-scheme: dark) { :root { --bg: #0f1214; --ink: #eceee9; --soft: #9ba4ab; --tally: #ff5b38; } }
+      html, body { height: 100%; margin: 0; }
+      body { display: grid; place-items: center; padding: 1rem; background: var(--bg); color: var(--ink); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+      main { max-width: 32rem; }
+      .dot { display: inline-block; width: .8rem; height: .8rem; border-radius: 50%; background: var(--tally); margin-right: .6rem; }
+      h1 { margin: 0 0 .75rem; font-size: clamp(2.2rem, 8vw, 3.5rem); line-height: 1; letter-spacing: -.02em; }
+      p { margin: 0 0 1.5rem; color: var(--soft); line-height: 1.6; }
+      a { color: var(--ink); font-weight: 600; text-underline-offset: .25em; }
+      a:hover { color: var(--tally); }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1><span class="dot"></span>404</h1>
+      <p>Esta página no existe, o se ha movido. · This page does not exist, or it has moved.</p>
+      <p><a href="/">Volver a MirrorLab</a> · <a href="/en/">Back to MirrorLab</a></p>
+    </main>
+  </body>
+</html>

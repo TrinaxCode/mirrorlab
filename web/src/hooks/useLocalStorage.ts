@@ -16,6 +16,7 @@ export const STORAGE_KEYS = {
   lang: "mirrorlab:lang",
   filter: "mirrorlab:filter",
   settings: "mirrorlab:settings",
+  analytics: "mirrorlab:analytics",
 } as const;
 
 function read<T>(key: string, fallback: T, parse?: (value: unknown) => T | null): T {

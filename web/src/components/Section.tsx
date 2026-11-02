@@ -16,13 +16,15 @@ export interface SectionProps {
  */
 export function Section({ id, title, subtitle, children, className = "", wide = false }: SectionProps) {
   return (
-    <section id={id} className={`scroll-mt-16 border-t border-line px-4 py-16 sm:px-6 sm:py-24 ${className}`}>
+    <section id={id} aria-labelledby={`${id}-title`} className={`scroll-mt-16 border-t border-line px-4 py-16 sm:px-6 sm:py-24 ${className}`}>
       <div
         className={`mx-auto max-w-6xl ${wide ? "" : "lg:grid lg:grid-cols-[minmax(0,4fr)_minmax(0,8fr)] lg:gap-x-14"}`}
       >
         <header className={wide ? "mb-10 max-w-3xl" : "mb-10 lg:mb-0"}>
           <div className={wide ? "" : "lg:sticky lg:top-24"}>
-            <h2 className="heading text-4xl sm:text-5xl">{title}</h2>
+            <h2 id={`${id}-title`} className="heading text-4xl sm:text-5xl">
+              {title}
+            </h2>
             {subtitle ? <p className="mt-4 max-w-[46ch] text-base leading-relaxed text-ink-soft">{subtitle}</p> : null}
           </div>
         </header>

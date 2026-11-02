@@ -2,8 +2,10 @@ import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
+import { seoPlugin } from "./seo-plugin";
+
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [react(), tailwindcss(), seoPlugin()],
   build: {
     target: "es2022",
     cssTarget: "safari16",

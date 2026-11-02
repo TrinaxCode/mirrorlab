@@ -16,10 +16,22 @@ const es = {
   name: "Español",
   other: "English",
   switchLabel: "Cambiar a inglés",
+  seo: {
+    title: "MirrorLab · Cámara virtual con gestos para Windows, macOS y Linux",
+    description:
+      "Cámara virtual gratis para Zoom, Meet y Teams: desenfoca el fondo, te encuadra solo, ajusta la luz y se controla con gestos de la mano. Funciona en tu equipo y no sube vídeo a ningún sitio. Para Windows, macOS y Linux.",
+    ogTitle: "MirrorLab: cierra la cámara con la mano abierta",
+    ogDescription:
+      "Desenfoque de fondo, encuadre automático y control por gestos para tus videollamadas. Gratis, de código abierto y privada.",
+    ogLocale: "es_ES",
+    keywords:
+      "cámara virtual, desenfocar fondo videollamada, encuadre automático, control por gestos, Zoom, Google Meet, Microsoft Teams, OBS, webcam, privacidad, código abierto",
+  },
   nav: {
     demo: "Demo",
     features: "Qué hace",
     control: "Gestos",
+    download: "Descargar",
     install: "Instalar",
     filters: "Filtros",
     gestures: "Gestos",
@@ -33,8 +45,9 @@ const es = {
     kicker: "Cámara virtual con control por gestos",
     pitch:
       "MirrorLab es una cámara virtual para Zoom, Meet y Teams. Desenfoca el fondo, te mantiene encuadrado y se controla con las manos, sin buscar el teclado en mitad de la reunión.",
-    ctaPrimary: "Probar en el navegador",
-    ctaSecondary: "Instalar en el escritorio",
+    ctaPrimary: "Descargar la app",
+    ctaSecondary: "Probar en el navegador",
+    platforms: "Windows · macOS · Linux · gratis y de código abierto",
     commandLabel: "Así se arranca",
     copy: "Copiar",
     copied: "Copiado",
@@ -115,14 +128,87 @@ const es = {
       },
       {
         title: "Sin cuentas ni seguimiento",
-        body: "Esta página no pide registro ni incluye analítica o cookies de seguimiento.",
+        body: "Esta página no pide registro ni usa cookies de seguimiento. Si quieres, puedes activar estadísticas anónimas de visitas desde el pie de página; están desactivadas por defecto.",
+      },
+    ],
+  },
+  download: {
+    title: "Descarga la app",
+    subtitle:
+      "Una aplicación para Windows, macOS y Linux, con ventana, vista previa y todos los controles. Se instala como cualquier otra.",
+    recommended: "Recomendado para tu sistema",
+    cta: "Descargar para {os}",
+    allReleases: "Todas las versiones y sumas de verificación",
+    platforms: [
+      {
+        id: "windows",
+        name: "Windows",
+        file: "Instalador .exe o ZIP portátil",
+        requirements: "Windows 10 o superior, 64 bits",
+        note: "Para usarla en Zoom, Meet o Teams, instala OBS Studio: aporta el dispositivo «OBS Virtual Camera».",
+      },
+      {
+        id: "macos",
+        name: "macOS",
+        file: "Imagen de disco .dmg",
+        requirements: "macOS 12 o superior, chip Apple",
+        note: "La app no está notarizada: la primera vez, clic derecho › Abrir. Necesita OBS Studio para la cámara virtual.",
+      },
+      {
+        id: "linux",
+        name: "Linux",
+        file: "Paquete .deb o archivo .tar.gz",
+        requirements: "Ubuntu 22.04 o equivalente, 64 bits",
+        note: "Para la cámara virtual instala v4l2loopback: sudo apt install v4l2loopback-dkms.",
+      },
+    ],
+    steps: [
+      { title: "Descarga e instala", body: "Abre el archivo de tu sistema y sigue el instalador." },
+      { title: "Enciende la cámara", body: "Pulsa «Encender cámara» y elige el fondo. La app te dice si falta algo." },
+      { title: "Elígela en tu videollamada", body: "En Zoom, Meet o Teams, selecciona «MirrorLab» como cámara." },
+    ],
+    license:
+      "El código es MIT. Los instaladores incluyen pyvirtualcam (GPL-2.0), así que los binarios se distribuyen bajo GPL-2.0.",
+    screenshot: {
+      src: "/screenshots/desktop-app-es.png",
+      alt: "Ventana de MirrorLab en escritorio: vista previa de la cámara a la izquierda y, a la derecha, los controles de fondo, encuadre, luz, gestos y reacciones.",
+      caption: "La app de escritorio: vista previa en directo y todos los controles.",
+    },
+  },
+  faq: {
+    title: "Preguntas frecuentes",
+    subtitle: "Lo que suele preguntar la gente antes de instalarla.",
+    items: [
+      {
+        q: "¿MirrorLab sube mi vídeo a algún sitio?",
+        a: "No. La cámara se lee y se procesa en tu equipo, con la CPU. Lo único que se descarga son unos 12 MB de modelos de visión la primera vez, y los modelos se verifican con una suma SHA-256.",
+      },
+      {
+        q: "¿Funciona con Zoom, Google Meet y Microsoft Teams?",
+        a: "Sí. MirrorLab publica una cámara virtual que cualquier aplicación de videollamadas puede elegir, y también OBS, Discord y el navegador.",
+      },
+      {
+        q: "¿Necesito una tarjeta gráfica NVIDIA?",
+        a: "No. Todo corre en la CPU, en Windows, macOS y Linux. En un portátil de gama media mantiene 30 fotogramas por segundo.",
+      },
+      {
+        q: "¿Por qué hace falta OBS o v4l2loopback?",
+        a: "El sistema operativo necesita un dispositivo de cámara virtual y una aplicación no puede crearlo sola. En Windows y macOS lo aporta OBS Studio; en Linux, el módulo v4l2loopback. La app te dice qué falta.",
+      },
+      {
+        q: "¿Cómo se controla sin tocar el teclado?",
+        a: "Con gestos de la mano que hay que mantener un instante: la palma abierta tapa la cámara, la paz cambia el fondo y el pulgar, el corazón o el OK lanzan una reacción. También hay un comando, mirrorlab ctl, que puedes asignar a un atajo.",
+      },
+      {
+        q: "¿Es gratis? ¿Quién lo ha hecho?",
+        a: "Es gratis y de código abierto (MIT). Lo creó TrinaxCode y el código está en github.com/TrinaxCode/mirrorlab.",
       },
     ],
   },
   install: {
-    title: "Instálalo en el escritorio",
+    title: "O instálalo con Python",
     subtitle:
-      "Python 3.9 a 3.12, solo CPU. Windows y macOS necesitan OBS para tener un dispositivo de cámara; Linux usa v4l2loopback.",
+      "Para desarrolladores y para quien prefiera la terminal. Python 3.9 a 3.12, solo CPU. Windows y macOS necesitan OBS para tener un dispositivo de cámara; Linux usa v4l2loopback.",
     tabsLabel: "Sistema operativo",
     copy: "Copiar",
     copied: "Copiado",
@@ -310,6 +396,16 @@ const es = {
     license: "Licencia MIT",
     privacy: "Privacidad: el vídeo nunca sale del navegador.",
     built: "Hecho con Vite, React y MediaPipe Tasks Vision.",
+    createdBy: "Creado por",
+    author: "TrinaxCode",
+    stats: {
+      label: "Estadísticas anónimas de visitas",
+      on: "Activadas",
+      off: "Desactivadas",
+      hint: "Solo páginas vistas y clics en descargar, con Firebase Analytics. Nunca vídeo ni imágenes.",
+      refused: "Tu navegador pide no ser rastreado, así que no se activan.",
+      failed: "No se pudieron cargar (¿un bloqueador?). La web funciona igual.",
+    },
   },
   common: {
     on: "Sí",
@@ -328,10 +424,22 @@ const en: Dict = {
   name: "English",
   other: "Español",
   switchLabel: "Switch to Spanish",
+  seo: {
+    title: "MirrorLab · Virtual camera with gestures for Windows, macOS, Linux",
+    description:
+      "A free virtual camera for Zoom, Meet and Teams: it blurs your background, keeps you framed, fixes your lighting and is controlled with hand gestures. It runs on your machine and uploads no video. For Windows, macOS and Linux.",
+    ogTitle: "MirrorLab: cover the camera with an open palm",
+    ogDescription:
+      "Background blur, auto-framing and gesture control for your video calls. Free, open source and private.",
+    ogLocale: "en_US",
+    keywords:
+      "virtual camera, blur background video call, auto framing, gesture control, Zoom, Google Meet, Microsoft Teams, OBS, webcam, privacy, open source",
+  },
   nav: {
     demo: "Demo",
     features: "Features",
     control: "Gestures",
+    download: "Download",
     install: "Install",
     filters: "Filters",
     gestures: "Gestures",
@@ -345,8 +453,9 @@ const en: Dict = {
     kicker: "A virtual camera you control with gestures",
     pitch:
       "MirrorLab is a virtual camera for Zoom, Meet and Teams. It blurs your background, keeps you framed and is driven by your hands, so you never hunt for the keyboard mid-meeting.",
-    ctaPrimary: "Try it in the browser",
-    ctaSecondary: "Install on desktop",
+    ctaPrimary: "Download the app",
+    ctaSecondary: "Try it in the browser",
+    platforms: "Windows · macOS · Linux · free and open source",
     commandLabel: "How it starts",
     copy: "Copy",
     copied: "Copied",
@@ -427,12 +536,85 @@ const en: Dict = {
       },
       {
         title: "No accounts, no tracking",
-        body: "This page asks for no sign-up and includes no analytics or tracking cookies.",
+        body: "This page asks for no sign-up and sets no tracking cookies. If you like, you can turn on anonymous visit statistics from the footer; they are off by default.",
+      },
+    ],
+  },
+  download: {
+    title: "Download the app",
+    subtitle:
+      "An app for Windows, macOS and Linux, with a window, a live preview and every control. It installs like any other.",
+    recommended: "Recommended for your system",
+    cta: "Download for {os}",
+    allReleases: "All versions and checksums",
+    platforms: [
+      {
+        id: "windows",
+        name: "Windows",
+        file: ".exe installer or portable ZIP",
+        requirements: "Windows 10 or later, 64-bit",
+        note: "To use it in Zoom, Meet or Teams, install OBS Studio: it provides the “OBS Virtual Camera” device.",
+      },
+      {
+        id: "macos",
+        name: "macOS",
+        file: ".dmg disk image",
+        requirements: "macOS 12 or later, Apple silicon",
+        note: "The app is not notarised: the first time, right-click › Open. It needs OBS Studio for the virtual camera.",
+      },
+      {
+        id: "linux",
+        name: "Linux",
+        file: ".deb package or .tar.gz archive",
+        requirements: "Ubuntu 22.04 or equivalent, 64-bit",
+        note: "For the virtual camera install v4l2loopback: sudo apt install v4l2loopback-dkms.",
+      },
+    ],
+    steps: [
+      { title: "Download and install", body: "Open the file for your system and follow the installer." },
+      { title: "Turn the camera on", body: "Press “Turn camera on” and pick a background. The app tells you if anything is missing." },
+      { title: "Pick it in your call", body: "In Zoom, Meet or Teams, choose “MirrorLab” as your camera." },
+    ],
+    license:
+      "The code is MIT. The installers bundle pyvirtualcam (GPL-2.0), so the binaries are distributed under GPL-2.0.",
+    screenshot: {
+      src: "/screenshots/desktop-app.png",
+      alt: "The MirrorLab desktop window: the camera preview on the left and, on the right, the background, framing, light, gesture and reaction controls.",
+      caption: "The desktop app: a live preview and every control.",
+    },
+  },
+  faq: {
+    title: "Frequently asked questions",
+    subtitle: "What people usually ask before installing it.",
+    items: [
+      {
+        q: "Does MirrorLab upload my video anywhere?",
+        a: "No. The camera is read and processed on your machine, on the CPU. The only download is about 12 MB of vision models the first time, and the models are checked against a SHA-256 hash.",
+      },
+      {
+        q: "Does it work with Zoom, Google Meet and Microsoft Teams?",
+        a: "Yes. MirrorLab publishes a virtual camera that any video-call app can select, and so can OBS, Discord and the browser.",
+      },
+      {
+        q: "Do I need an NVIDIA graphics card?",
+        a: "No. Everything runs on the CPU, on Windows, macOS and Linux. On a mid-range laptop it holds 30 frames per second.",
+      },
+      {
+        q: "Why is OBS or v4l2loopback needed?",
+        a: "The operating system needs a virtual camera device and an app cannot create one by itself. On Windows and macOS OBS Studio provides it; on Linux, the v4l2loopback module does. The app tells you what is missing.",
+      },
+      {
+        q: "How do I control it without touching the keyboard?",
+        a: "With hand gestures held for a moment: an open palm covers the camera, a peace sign changes the background, and a thumb, heart or OK sign throws a reaction. There is also a command, mirrorlab ctl, that you can bind to a hotkey.",
+      },
+      {
+        q: "Is it free? Who made it?",
+        a: "It is free and open source (MIT). It was created by TrinaxCode and the code is at github.com/TrinaxCode/mirrorlab.",
       },
     ],
   },
   install: {
-    title: "Install it on your desktop",
+    title: "Or install it with Python",
     subtitle:
       "Python 3.9 to 3.12, CPU only. Windows and macOS need OBS to provide a camera device; Linux uses v4l2loopback.",
     tabsLabel: "Operating system",
@@ -619,6 +801,16 @@ const en: Dict = {
     repo: "View the repository on GitHub",
     license: "MIT licensed",
     privacy: "Privacy: the video never leaves the browser.",
+    createdBy: "Created by",
+    author: "TrinaxCode",
+    stats: {
+      label: "Anonymous visit statistics",
+      on: "On",
+      off: "Off",
+      hint: "Only page views and download clicks, with Firebase Analytics. Never video or images.",
+      refused: "Your browser asks not to be tracked, so they stay off.",
+      failed: "They could not load (a blocker?). The site works the same.",
+    },
     built: "Built with Vite, React and MediaPipe Tasks Vision.",
   },
   common: {
@@ -635,6 +827,16 @@ export const STRINGS: Record<Lang, Dict> = { es, en };
 /** Normalise anything that came out of `localStorage` into a supported language. */
 export function coerceLang(value: unknown): Lang {
   return value === "en" ? "en" : "es";
+}
+
+/** `/en/` serves English; every other path is the Spanish page. `null` when the path says nothing. */
+export function langFromPath(pathname: string = typeof window === "undefined" ? "/" : window.location.pathname): Lang | null {
+  return /^\/en(\/|$)/.test(pathname) ? "en" : null;
+}
+
+/** The URL that serves a language: `/` for Spanish, `/en/` for English. */
+export function pathForLang(lang: Lang): string {
+  return lang === "en" ? "/en/" : "/";
 }
 
 export function nextLang(current: Lang): Lang {

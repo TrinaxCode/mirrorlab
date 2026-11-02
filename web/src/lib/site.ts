@@ -2,6 +2,11 @@
 
 export const SITE_NAME = "MirrorLab";
 export const REPO_URL = "https://github.com/TrinaxCode/mirrorlab";
+export const AUTHOR_NAME = "TrinaxCode";
+export const AUTHOR_URL = "https://github.com/TrinaxCode";
+/** Canonical origin of the site, used for links, the sitemap and structured data. */
+export const SITE_URL = "https://mirrorlabapp.web.app";
+export const RELEASES_URL = `${REPO_URL}/releases/latest`;
 export const SNAPSHOT_PREFIX = "mirrorlab";
 
 /** `mirrorlab-20250101-120000.png` — sortable, local time, no illegal characters. */

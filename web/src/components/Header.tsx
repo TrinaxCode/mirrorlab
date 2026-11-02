@@ -8,10 +8,10 @@ export interface HeaderProps {
 }
 
 const NAV_ITEMS = [
+  { href: "#download", key: "download" },
   { href: "#demo", key: "demo" },
   { href: "#features", key: "features" },
   { href: "#control", key: "control" },
-  { href: "#install", key: "install" },
 ] as const;
 
 /** A lens seen from the front: housing, ring, and the tally light. */

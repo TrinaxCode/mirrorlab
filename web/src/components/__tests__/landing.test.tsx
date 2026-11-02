@@ -10,6 +10,9 @@ import { describe, expect, it, vi } from "vitest";
 import { FilterBar, FilterGallery } from "../FilterBar";
 import { GestureGuide } from "../GestureGuide";
 import { Control } from "../Control";
+import { Download } from "../Download";
+import { Faq } from "../Faq";
+import { Footer } from "../Footer";
 import { Install } from "../Install";
 import { ShortcutsTable } from "../ShortcutsTable";
 import { SnapshotTray, type TrayItem } from "../SnapshotTray";
@@ -137,5 +140,65 @@ describe("Install", () => {
 
     await userEvent.click(screen.getByRole("tab", { name: "Linux" }));
     expect(screen.getByText(/v4l2loopback devices=1/)).toBeInTheDocument();
+  });
+});
+
+describe("Download", () => {
+  it("offers all three systems and links to the releases", () => {
+    render(<Download strings={es} />);
+    const cards = within(screen.getByRole("region", { name: es.download.title })).getAllByRole("listitem");
+    expect(cards.length).toBeGreaterThanOrEqual(3);
+    for (const platform of es.download.platforms) {
+      const link = screen.getByRole("link", { name: `Descargar para ${platform.name}` });
+      expect(link).toHaveAttribute("href", "https://github.com/TrinaxCode/mirrorlab/releases/latest");
+    }
+  });
+
+  it("recommends exactly one system", () => {
+    render(<Download strings={en} />);
+    expect(screen.getAllByText(en.download.recommended)).toHaveLength(1);
+  });
+
+  it("is translated", () => {
+    render(<Download strings={en} />);
+    expect(screen.getByRole("link", { name: "Download for Windows" })).toBeInTheDocument();
+  });
+});
+
+describe("Faq", () => {
+  it("renders every question with its answer", () => {
+    render(<Faq strings={en} />);
+    for (const item of en.faq.items) {
+      expect(screen.getByText(item.q)).toBeInTheDocument();
+      expect(screen.getByText(item.a)).toBeInTheDocument();
+    }
+  });
+});
+
+describe("Footer", () => {
+  it("credits TrinaxCode with a link to their GitHub", () => {
+    render(<Footer strings={es} />);
+    const link = screen.getByRole("link", { name: "TrinaxCode" });
+    expect(link).toHaveAttribute("href", "https://github.com/TrinaxCode");
+    expect(link).toHaveAttribute("rel", expect.stringContaining("author"));
+  });
+
+  it("starts with anonymous statistics off and never loads Firebase until asked", () => {
+    window.localStorage.removeItem("mirrorlab:analytics");
+    render(<Footer strings={es} />);
+    const toggle = screen.getByRole("switch");
+    expect(toggle).toHaveAttribute("aria-checked", "false");
+    expect(toggle).toHaveTextContent(es.footer.stats.off);
+  });
+
+  it("is not offered when the browser sends Do Not Track", () => {
+    Object.defineProperty(window.navigator, "doNotTrack", { value: "1", configurable: true });
+    try {
+      render(<Footer strings={en} />);
+      expect(screen.getByRole("switch")).toBeDisabled();
+      expect(screen.getByText(en.footer.stats.refused)).toBeInTheDocument();
+    } finally {
+      Reflect.deleteProperty(window.navigator, "doNotTrack");
+    }
   });
 });

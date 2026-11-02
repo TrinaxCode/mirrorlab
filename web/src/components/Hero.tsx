@@ -18,13 +18,14 @@ export function Hero({ strings }: HeroProps) {
           <p className="mt-6 max-w-[44ch] text-lg leading-relaxed text-ink-soft">{hero.pitch}</p>
 
           <div className="mt-8 flex flex-wrap items-center gap-3">
-            <a href="#demo" className="btn btn-primary">
+            <a href="#download" className="btn btn-primary">
               {hero.ctaPrimary}
             </a>
-            <a href="#install" className="btn btn-quiet">
+            <a href="#demo" className="btn btn-quiet">
               {hero.ctaSecondary}
             </a>
           </div>
+          <p className="mt-4 text-sm text-ink-soft">{hero.platforms}</p>
 
           <div className="mt-10 max-w-md">
             <p className="mb-2 text-sm text-ink-soft">{hero.commandLabel}</p>

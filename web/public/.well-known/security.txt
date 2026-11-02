@@ -1,0 +1,5 @@
+Contact: https://github.com/TrinaxCode/mirrorlab/security/advisories/new
+Expires: 2027-10-31T00:00:00.000Z
+Preferred-Languages: es, en
+Canonical: https://mirrorlabapp.web.app/.well-known/security.txt
+Policy: https://github.com/TrinaxCode/mirrorlab/blob/main/SECURITY.md
