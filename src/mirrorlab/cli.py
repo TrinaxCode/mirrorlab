@@ -114,6 +114,19 @@ def build_parser() -> argparse.ArgumentParser:
 
     add_studio_parsers(sub, common)
 
+    # -- desktop --------------------------------------------------------- #
+    desktop = sub.add_parser(
+        "desktop",
+        aliases=["gui"],
+        parents=[common],
+        help="open the MirrorLab Studio window (the same virtual camera, with buttons)",
+    )
+    desktop.add_argument("--source", help="use a video or image file instead of a camera (for demos)")
+    desktop.add_argument("--synthetic", action="store_true", help="use the built-in test pattern")
+    desktop.add_argument("--output", choices=("vcam", "none"), help="start with this output selected")
+    desktop.add_argument("--geometry", metavar="WxH", help="open the window at this size (for screenshots)")
+    desktop.add_argument("--autostart", action="store_true", help="turn the camera on when the window opens")
+
     # -- play (alias: run) ----------------------------------------------- #
     run = sub.add_parser(
         "play",
@@ -778,6 +791,23 @@ def _shortcut_table(app: Any) -> str:
     return "\n".join(lines)
 
 
+def _cmd_desktop(args: argparse.Namespace) -> int:
+    from .desktop import main as run_desktop
+
+    forwarded: List[str] = []
+    if args.source:
+        forwarded += ["--source", args.source]
+    if args.synthetic:
+        forwarded.append("--synthetic")
+    if args.output:
+        forwarded += ["--output", args.output]
+    if args.geometry:
+        forwarded += ["--geometry", args.geometry]
+    if args.autostart:
+        forwarded.append("--autostart")
+    return run_desktop(forwarded)
+
+
 # --------------------------------------------------------------------------- #
 # Entry point
 # --------------------------------------------------------------------------- #
@@ -788,6 +818,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     known = {
         "cam",
         "ctl",
+        "desktop",
+        "gui",
         "play",
         "run",
         "doctor",
@@ -833,6 +865,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     handlers = {
         "cam": cmd_cam,
         "ctl": cmd_ctl,
+        "desktop": _cmd_desktop,
+        "gui": _cmd_desktop,
         "play": _cmd_run,
         "run": _cmd_run,
         "demo": _cmd_demo,

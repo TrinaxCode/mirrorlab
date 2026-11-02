@@ -1,0 +1,178 @@
+name: Release
+
+# Builds the double-click apps for Windows, macOS and Linux, proves each one
+# starts, and (for a version tag) attaches them to the GitHub release.
+#
+#   git tag v2.2.0 && git push origin v2.2.0
+#
+# Run it by hand (Actions > Release > Run workflow) to get the installers as
+# build artifacts without publishing anything.
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  PYTHONUNBUFFERED: "1"
+  MIRRORLAB_MODELS: ${{ github.workspace }}/.model-cache
+
+jobs:
+  build:
+    name: Build · ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-24.04, name: linux }
+          - { os: windows-latest, name: windows }
+          - { os: macos-latest, name: macos }
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      - name: Install system libraries (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libgl1 libegl1 libgles2 libglib2.0-0t64 libsm6 libxext6 libice6 libxrender1 libxcb1 \
+            xvfb imagemagick
+
+      - name: Install MirrorLab and PyInstaller
+        run: python -m pip install ".[vcam,packaging]"
+
+      - id: version
+        shell: bash
+        run: echo "version=$(python -c 'import mirrorlab; print(mirrorlab.__version__)')" >> "$GITHUB_OUTPUT"
+
+      - name: Check the tag matches the version
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: bash
+        run: |
+          expected="v${{ steps.version.outputs.version }}"
+          if [ "$GITHUB_REF_NAME" != "$expected" ]; then
+            echo "::error::tag $GITHUB_REF_NAME does not match the package version ($expected)"
+            exit 1
+          fi
+
+      - name: Freeze the app
+        run: pyinstaller --noconfirm --clean packaging/mirrorlab.spec
+
+      - name: Self-test the frozen app (imports, models, 20 frames)
+        shell: bash
+        run: |
+          exe="dist/MirrorLab/MirrorLab"
+          [ "$RUNNER_OS" = "Windows" ] && exe="dist/MirrorLab/MirrorLab.exe"
+          "$exe" --self-test self-test.json || { cat self-test.json || true; exit 1; }
+          cat self-test.json
+
+      - name: Open the window and wait for the first frame (Linux)
+        if: runner.os == 'Linux'
+        run: xvfb-run -a -s "-screen 0 1280x800x24" python packaging/gui_smoke.py dist/MirrorLab/MirrorLab
+
+      - name: Open the window and wait for the first frame
+        if: runner.os != 'Linux'
+        shell: bash
+        run: |
+          exe="dist/MirrorLab/MirrorLab"
+          [ "$RUNNER_OS" = "Windows" ] && exe="dist/MirrorLab/MirrorLab.exe"
+          [ "$RUNNER_OS" = "macOS" ] && exe="dist/MirrorLab.app/Contents/MacOS/MirrorLab"
+          python packaging/gui_smoke.py "$exe"
+
+      - name: Package (Linux)
+        if: runner.os == 'Linux'
+        run: packaging/linux/build.sh "${{ steps.version.outputs.version }}" dist
+
+      - name: Package (macOS)
+        if: runner.os == 'macOS'
+        run: packaging/macos/build.sh "${{ steps.version.outputs.version }}" dist
+
+      - name: Package (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $version = "${{ steps.version.outputs.version }}"
+          if (-not (Get-Command iscc -ErrorAction SilentlyContinue)) { choco install innosetup -y --no-progress }
+          $iscc = (Get-Command iscc -ErrorAction SilentlyContinue).Source
+          if (-not $iscc) { $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" }
+          & $iscc "/DAppVersion=$version" packaging\windows\mirrorlab.iss
+          Compress-Archive -Path dist\MirrorLab -DestinationPath "dist\MirrorLab-$version-windows-portable.zip"
+
+      - name: Collect the release files
+        shell: bash
+        run: |
+          mkdir release
+          cp dist/*.tar.gz dist/*.deb dist/*.dmg dist/*.exe dist/*.zip release/ 2>/dev/null || true
+          ls -la release
+          test -n "$(ls -A release)"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MirrorLab-${{ matrix.name }}
+          path: release/*
+          if-no-files-found: error
+          retention-days: 14
+
+  publish:
+    name: Publish the release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Checksums
+        run: |
+          cd artifacts
+          sha256sum * > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+
+      - name: Create or update the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          # Release notes: the matching CHANGELOG section, else GitHub's generated notes.
+          awk -v v="$VERSION" '
+            $0 ~ "^## \\[" v "\\]" { on=1; next }
+            on && /^## \[/ { exit }
+            on { print }
+          ' CHANGELOG.md > notes.md
+          cat >> notes.md <<'NOTES'
+
+          ---
+          **Downloads:** Windows `*-setup.exe` (or the portable `.zip`), macOS `.dmg`, Linux `.deb` or `.tar.gz`.
+          Publishing to Zoom, Meet or Teams needs a virtual camera on your system: the app tells you what is missing and how to install it.
+          The macOS app is not notarised, so the first launch is right-click > Open. Verify downloads with `SHA256SUMS.txt`.
+          The packaged apps include pyvirtualcam (GPL-2.0), so these binaries are distributed under GPL-2.0; the source code in this repository stays MIT. See THIRD_PARTY_LICENSES.md.
+          NOTES
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" artifacts/* --clobber
+          else
+            gh release create "$GITHUB_REF_NAME" artifacts/* --title "MirrorLab $VERSION" --notes-file notes.md
+          fi

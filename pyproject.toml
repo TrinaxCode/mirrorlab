@@ -4,12 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mirrorlab"
-version = "2.1.0"
+version = "2.2.0"
 description = "A virtual camera for video calls with background blur, auto-framing, studio light and hand-gesture control. CPU only, runs locally."
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "MIT" }
 authors = [{ name = "TrinaxCode", email = "trinaxcode@users.noreply.github.com" }]
+maintainers = [{ name = "TrinaxCode", email = "trinaxcode@users.noreply.github.com" }]
 keywords = [
     "virtual-camera",
     "webcam",
@@ -25,6 +26,7 @@ keywords = [
 classifiers = [
     "Development Status :: 4 - Beta",
     "Environment :: Console",
+    "Environment :: X11 Applications",
     "Intended Audience :: Developers",
     "Intended Audience :: Education",
     "Intended Audience :: End Users/Desktop",
@@ -56,6 +58,8 @@ cli = ["rich>=13.0", "PyYAML>=6.0"]
 # opt-in extra and is deliberately NOT part of `all`, so installing MirrorLab
 # never pulls a GPL package unless you ask for it by name.
 vcam = ["pyvirtualcam>=0.11"]
+# Builds the double-click apps (see packaging/). Build-time only.
+packaging = ["pyinstaller>=6.10"]
 dev = [
     "pytest>=7.4",
     "pytest-cov>=4.1",
@@ -79,13 +83,17 @@ all = [
 [project.scripts]
 mirrorlab = "mirrorlab.cli:main"
 
+[project.gui-scripts]
+mirrorlab-studio = "mirrorlab.desktop:main"
+
 [project.urls]
 Homepage = "https://github.com/TrinaxCode/mirrorlab"
 Documentation = "https://github.com/TrinaxCode/mirrorlab/blob/main/docs/STUDIO.md"
 Repository = "https://github.com/TrinaxCode/mirrorlab"
 Issues = "https://github.com/TrinaxCode/mirrorlab/issues"
 Changelog = "https://github.com/TrinaxCode/mirrorlab/blob/main/CHANGELOG.md"
-"Live Demo" = "https://mirrorlab-demo.vercel.app"
+"Live Demo" = "https://mirrorlabapp.web.app"
+Download = "https://github.com/TrinaxCode/mirrorlab/releases/latest"
 
 [tool.setuptools]
 package-dir = { "" = "src" }
@@ -94,7 +102,7 @@ package-dir = { "" = "src" }
 where = ["src"]
 
 [tool.setuptools.package-data]
-mirrorlab = ["py.typed", "data/*.json"]
+mirrorlab = ["py.typed", "data/*.json", "desktop/assets/*.png"]
 
 [tool.setuptools.exclude-package-data]
 # Model bundles are downloaded on first run, never shipped in the wheel.

@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=MirrorLab
+GenericName=Virtual camera
+GenericName[es]=Cámara virtual
+Comment=Background blur, auto-framing and hand-gesture control for video calls
+Comment[es]=Desenfoque de fondo, encuadre automático y control por gestos para videollamadas
+Exec=mirrorlab-studio
+Icon=mirrorlab
+Terminal=false
+Categories=AudioVideo;Video;
+Keywords=webcam;camera;virtual;blur;background;gestures;
+StartupWMClass=MirrorLab

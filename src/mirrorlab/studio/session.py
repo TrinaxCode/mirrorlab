@@ -24,7 +24,7 @@ from collections import defaultdict, deque
 from contextlib import suppress
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Deque, Dict, List, Optional, Tuple
+from typing import Any, Callable, Deque, Dict, List, Optional, Tuple
 
 import cv2
 import numpy as np
@@ -120,6 +120,10 @@ class StudioSession:
         synthetic: Use the built-in synthetic source instead of a camera.
         perception: Inject a perception engine (tests). ``None`` builds the real one.
         segmenter: Inject a segmenter (tests). ``None`` builds the real one.
+        snapshot_dir: Where ``snapshot`` actions write their PNG.
+        frame_callback: Called on the session thread with every output frame, so a
+            window can draw what the other end of the call is seeing. It must be quick
+            and must not mutate the array.
     """
 
     def __init__(
@@ -134,7 +138,8 @@ class StudioSession:
         synthetic: bool = False,
         perception: Any = None,
         segmenter: Any = None,
-        snapshot_dir: str = "captures",
+        snapshot_dir: "str | Path" = "captures",
+        frame_callback: Optional[Callable[[np.ndarray], None]] = None,
     ) -> None:
         self.settings = settings
         self.config = config or Config()
@@ -144,6 +149,7 @@ class StudioSession:
         self.control_enabled = bool(control)
         self.synthetic = bool(synthetic)
         self.snapshot_dir = snapshot_dir
+        self._frame_callback = frame_callback
 
         self.stats = LatencyStats()
         self.state = StudioState.from_settings(settings)
@@ -282,6 +288,8 @@ class StudioSession:
                     self.stats.record("send", (time.perf_counter() - t_send) * 1000.0)
                     report.frames += 1
                     frames_in_second += 1
+                    if self._frame_callback is not None:
+                        self._notify_frame(last_output)
 
                 if preview_ok and last_output is not None:
                     preview_ok = self._show_preview(last_output)
@@ -318,6 +326,13 @@ class StudioSession:
             log.info("snapshot saved: %s", path)
         else:  # pragma: no cover - disk full or unwritable
             log.warning("could not write snapshot to %s", path)
+
+    def _notify_frame(self, output: np.ndarray) -> None:
+        try:
+            self._frame_callback(output)  # type: ignore[misc]
+        except Exception as exc:  # a broken window must never stop the camera
+            log.debug("frame callback failed: %s", exc)
+            self._frame_callback = None
 
     def _status(self) -> Dict[str, Any]:
         return {
