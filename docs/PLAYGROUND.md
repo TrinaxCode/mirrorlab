@@ -19,7 +19,7 @@ from blendshapes, the sunglasses and crown are anchored to the eye line, and the
 one you get at runtime. Regenerate it yourself with `mirrorlab gallery` for a still contact
 sheet of all 54 filters.*
 
-**Or skip the install entirely:** **[mirrorlab-demo.vercel.app](https://mirrorlab-demo.vercel.app)**
+**Or skip the install entirely:** **[mirrorlabapp.web.app](https://mirrorlabapp.web.app/en/)**
 runs the same perception ideas in your browser with WebAssembly and WebGL. Your camera stream
 never leaves the page.
 

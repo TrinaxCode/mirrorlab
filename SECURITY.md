@@ -6,10 +6,11 @@
 
 | Version | Supported | Notes |
 | --- | --- | --- |
-| `2.1.x` | ✅ | Current release. Security fixes land here first. |
+| `2.2.x` | ✅ | Current release. Security fixes land here first. |
+| `2.1.x` | ⚠️ | Fixes are backported when the change is small. |
 | `2.0.x` | ⚠️ | Fixes are backported only when the change is trivial. |
 | `1.x` | ❌ | The original single-file prototype. Unsupported. |
-| `web/` demo | ✅ | Static browser build; report issues here and they are treated as `2.1.x`. |
+| `web/` demo | ✅ | Static browser build; report issues here and they are treated as `2.2.x`. |
 
 MirrorLab 2.x tracks Python 3.9–3.12. A vulnerability that only reproduces on an
 end-of-life Python or on a version outside the tested dependency matrix (see
@@ -160,7 +161,7 @@ Worth being explicit about what MirrorLab does **not** defend against.
 * **Recordings are as sensitive as your room.** An MP4 or a snapshot in `captures/` is a
   file like any other — MirrorLab sets no special permissions on it and does not encrypt
   it.
-* **The hosted browser demo is a separate trust boundary.** `mirrorlab-demo.vercel.app` runs the
+* **The hosted browser demo is a separate trust boundary.** `mirrorlabapp.web.app` runs the
   vision models in your browser via WebAssembly and WebGL; your camera stream is read by the
   page locally and never uploaded. Its `Permissions-Policy` header requests `camera=(self)`
   and denies microphone and geolocation. If you do not trust the hosted page, run the demo

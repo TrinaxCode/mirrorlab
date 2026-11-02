@@ -26,7 +26,7 @@ Released 2026-01-15. Details in [CHANGELOG.md](CHANGELOG.md#200---2026-01-15).
 - [x] Air drawing, recording (MP4 + GIF), snapshots, stats CSV and a session summary
 - [x] Twelve-command CLI with `doctor`, `benchmark`, `cameras` and machine-readable output
 - [x] Layered, validated, frozen configuration with `MIRRORLAB_*` env overrides
-- [x] Browser demo (Vite + React + WebAssembly vision) deployed to Vercel
+- [x] Browser demo (Vite + React + WebAssembly vision), hosted on Firebase since 2.2.0
 - [x] Documentation set: English and Spanish READMEs plus seven deep-dive documents
 
 ---
@@ -68,7 +68,18 @@ new perception models — this milestone is about the edges around what already 
 
 ---
 
-## v2.2 — perception depth
+## v2.2 — the desktop app (shipped)
+
+- [x] A windowed app for Windows, macOS and Linux with a live preview and every control.
+- [x] Installers built and smoke-tested by CI: `.deb`, `.tar.gz`, `.exe`, portable `.zip`, `.dmg`.
+- [x] A website with SEO, a download page and opt-in analytics, on Firebase Hosting.
+- [ ] **Notarised macOS build** (needs an Apple Developer ID) and an Intel build.
+- [ ] **Windows code signing**, so SmartScreen stops warning on first run.
+- [ ] **Bundled virtual camera driver** so Windows and macOS no longer need OBS.
+
+---
+
+## v2.3 — perception depth
 
 Goal: use the signals the Tasks API already produces but MirrorLab ignores today. No new
 model downloads — this is about reading what is already there.

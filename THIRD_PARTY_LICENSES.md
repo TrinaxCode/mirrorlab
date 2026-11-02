@@ -6,8 +6,11 @@ MirrorLab itself is [MIT licensed](LICENSE) — © 2026 TrinaxCode. This file li
 depends on, under what terms, and what those terms ask of you.
 
 Short version: **everything MirrorLab links against is permissively licensed.** The one
-GPL component in this space (`pyvirtualcam`) is deliberately *not* a default dependency: it is
-the opt-in `vcam` extra and is never installed unless you ask for it. The model weights are not distributed by this project at
+GPL component in this space (`pyvirtualcam`) is deliberately *not* a default dependency of the
+Python package: it is the opt-in `vcam` extra and is never installed unless you ask for it.
+**The exception is the packaged desktop apps** (the `.exe`, `.dmg`, `.deb`, `.tar.gz` and
+portable `.zip` attached to a release): they bundle `pyvirtualcam` so the virtual camera works
+out of the box, which makes **those binaries GPL-2.0**. The source code stays MIT. The model weights are not distributed by this project at
 all; they are downloaded at runtime and governed by their own model cards.
 
 ---
@@ -153,6 +156,12 @@ keeps the two works independent. Both options are tracked in [ROADMAP.md](ROADMA
 
 The same reasoning applies to any future GPL or AGPL integration: optional extra, never a
 default.
+
+**Packaged apps.** A bundled app is a combined work, so the installers published on the
+release page are distributed under **GPL-2.0**, with the corresponding source in this
+repository (tag `v<version>`). If you want MIT-only terms, install from source without the
+`vcam` extra and use `--output none`. The installer builds also carry the notices of MediaPipe,
+OpenCV, NumPy and the other bundled libraries, which are permissive.
 
 ## Assets in this repository
 

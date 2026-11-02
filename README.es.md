@@ -3,14 +3,22 @@
 **Una cámara virtual para videollamadas, controlada con tus manos.** Desenfoque y reemplazo
 de fondo, encuadre automático, exposición medida sobre tu rostro y un obturador de privacidad,
 publicados como una cámara que Zoom, Meet, Teams, Discord, OBS y tu navegador pueden
-seleccionar. Funciona en la CPU, en tu máquina, en Linux, macOS y Windows.
+seleccionar. Una aplicación de escritorio para **Windows, macOS y Linux** que funciona en la
+CPU, en tu máquina.
 
-[English](README.md) | [Español](README.es.md)
+[English](README.md) | [Español](README.es.md) | [Sitio web](https://mirrorlabapp.web.app/) | [Descargar](https://github.com/TrinaxCode/mirrorlab/releases/latest)
 
 [![CI](https://github.com/TrinaxCode/mirrorlab/actions/workflows/ci.yml/badge.svg)](https://github.com/TrinaxCode/mirrorlab/actions/workflows/ci.yml)
 [![Licencia: MIT](https://img.shields.io/badge/license-MIT-3da639?style=flat-square)](LICENSE)
 [![Python 3.9–3.12](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-3776ab?style=flat-square)](pyproject.toml)
 [![Estado: beta](https://img.shields.io/badge/status-beta-f0a020?style=flat-square)](CHANGELOG.md)
+[![Versión](https://img.shields.io/github/v/release/TrinaxCode/mirrorlab?style=flat-square&color=e8421a)](https://github.com/TrinaxCode/mirrorlab/releases/latest)
+[![Plataformas](https://img.shields.io/badge/plataformas-Windows%20%7C%20macOS%20%7C%20Linux-444?style=flat-square)](#descarga)
+[![Web](https://img.shields.io/badge/web-mirrorlabapp.web.app-e8421a?style=flat-square)](https://mirrorlabapp.web.app/)
+
+<p align="center">
+  <img src="docs/media/desktop-demo-es.gif" alt="La app de escritorio de MirrorLab: vista previa en vivo, un corazón que flota sobre la imagen y la cámara tapada con un gesto" width="860">
+</p>
 
 ```console
 $ mirrorlab doctor                       # ¿está lista esta máquina? si no, te indica la solución exacta
@@ -21,6 +29,36 @@ $ mirrorlab ctl privacy                  # desde otra terminal o un atajo de tec
 Mantén la palma abierta durante 1,6 segundos y la cámara se cubre. Mantén el pulgar en alto y
 un pulgar arriba flota sobre tu imagen para las demás personas de la llamada. Sin mouse, sin
 ventanas que buscar en medio de una reunión.
+
+---
+
+## Descarga
+
+Descarga el instalador de tu sistema desde la
+[última versión](https://github.com/TrinaxCode/mirrorlab/releases/latest). Cada versión publica
+el SHA-256 de todos los archivos en `SHA256SUMS.txt`.
+
+| Sistema | Archivo | Notas |
+| --- | --- | --- |
+| **Windows 10+** (64 bits) | `MirrorLab-<versión>-windows-setup.exe`, o `…-windows-portable.zip` | Instala [OBS Studio](https://obsproject.com) para que Zoom, Meet y Teams tengan una *OBS Virtual Camera* que elegir. |
+| **macOS 12+** (Apple silicon) | `MirrorLab-<versión>-macos-arm64.dmg` | Aún sin notarizar: la primera vez, clic derecho sobre la app y *Abrir*. Necesita OBS 30+ para la cámara. |
+| **Linux** (Ubuntu 22.04+, x86-64) | `mirrorlab_<versión>_amd64.deb`, o `MirrorLab-<versión>-linux-x86_64.tar.gz` | Para la cámara virtual: `sudo apt install v4l2loopback-dkms`. |
+
+Abre **MirrorLab**, pulsa *Encender cámara*, elige un fondo y selecciona **MirrorLab** como
+cámara en tu videollamada. Si falta algo (un controlador de cámara virtual, el permiso de
+cámara), la app te dice qué hacer en lugar de fallar en silencio.
+
+<p align="center">
+  <img src="docs/media/desktop-live-es.png" alt="La ventana de MirrorLab con la vista previa en vivo y los controles de fondo, mejoras, privacidad, reacciones y salida" width="760">
+</p>
+
+> **Licencia de los binarios.** Los instaladores incluyen `pyvirtualcam` (GPL-2.0), así que las
+> **descargas se distribuyen bajo GPL-2.0**. El código fuente de este repositorio sigue siendo
+> MIT, y el extra `vcam` sigue siendo opcional si instalas desde el código. Detalles en
+> [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md).
+
+La app también está disponible como comando (ver [docs/DESKTOP.md](docs/DESKTOP.md)): `mirrorlab desktop` (o `mirrorlab-studio`) abre la
+misma ventana desde una instalación desde el código.
 
 ---
 
@@ -37,14 +75,16 @@ manos libres y el teclado no, por lo que los efectos se controlan con gestos de 
 tiempo de sostenimiento (para que un gesto hecho mientras conversas no active nada) y con un
 comando `ctl` que puedes asignar a cualquier atajo de teclado.
 
-No pretende superar en acabado a las aplicaciones dedicadas. No hay interfaz gráfica, la
+No pretende superar en acabado a las aplicaciones dedicadas. La
 máscara de la persona proviene de un modelo pequeño y rápido en lugar de una red de matting, y
 en Windows y macOS sigues necesitando OBS instalado para proporcionar el dispositivo de cámara.
 Consulta [Limitaciones](#limitaciones).
 
 ---
 
-## Instalación
+## Instalación desde el código
+
+¿Prefieres la línea de comandos, o quieres modificarlo? Todo lo que hace la app también es un comando.
 
 ```bash
 git clone https://github.com/TrinaxCode/mirrorlab.git
@@ -180,6 +220,9 @@ indica qué reducir en una máquina más lenta.
 
 Cosas que son ciertas hoy, para que no las descubras en plena reunión:
 
+- **La versión para macOS es solo para Apple silicon y no está notarizada**, y los instaladores
+  de Windows y macOS los produce y verifica con una prueba de humo el CI, no a mano en cada
+  versión.
 - **Windows y macOS necesitan OBS instalado** para proporcionar el dispositivo de cámara. Es
   un límite de la biblioteca subyacente, algo que MirrorLab no puede eliminar.
 - **La salida de la cámara virtual se prueba con mocks y, para todo lo anterior a ella, con una
@@ -205,7 +248,8 @@ filtros de video encadenables, 15 efectos de RA, 18 expresiones faciales y 22 ge
 mano. Comparte el código de percepción con el estudio y está documentado en
 [docs/PLAYGROUND.md](docs/PLAYGROUND.md). **La demo en el navegador** en [`web/`](web/) ejecuta
 un subconjunto de las mismas ideas del lado del cliente, en
-[mirrorlab-demo.vercel.app](https://mirrorlab-demo.vercel.app).
+[mirrorlabapp.web.app](https://mirrorlabapp.web.app/) (Firebase Hosting; español en `/`, inglés
+en `/en/`). La analítica está desactivada hasta que la aceptes.
 
 ---
 
@@ -222,8 +266,11 @@ MediaPipe sobre una fotografía real y se omite cuando los modelos no están dis
 CONTRIBUTING.md tiene las convenciones, y [docs/STUDIO.md](docs/STUDIO.md#how-a-frame-is-processed)
 tiene el mapa del código.
 
+Para construir los instaladores tú mismo, consulta [packaging/README.md](packaging/README.md).
+
 ```
 src/mirrorlab/
+├── desktop/       la app Tkinter: ventana, hilo de ejecución, preferencias, autocomprobación
 ├── studio/        la cámara virtual: configuración, estado, pipeline, efectos, control, sesión
 ├── detectors/     rostro / manos / segmentación de MediaPipe tras una escalera de respaldo
 ├── gestures.py    22 gestos de la mano a partir de reglas geométricas explicables
@@ -253,4 +300,11 @@ Para citar, usa [CITATION.cff](CITATION.cff). Los reportes de seguridad se enví
 [SECURITY.md](SECURITY.md). Contribuciones: [CONTRIBUTING.md](CONTRIBUTING.md) y el
 [Código de Conducta](CODE_OF_CONDUCT.md).
 
-MIT © 2026 TrinaxCode (Huascar Ignacio D Trinidad Arguello).
+---
+
+<p align="center">
+  Creado por <a href="https://github.com/TrinaxCode"><strong>TrinaxCode</strong></a>
+  (Huascar Ignacio D Trinidad Arguello) · <a href="https://github.com/TrinaxCode/mirrorlab">github.com/TrinaxCode/mirrorlab</a>
+</p>
+
+Código fuente MIT © 2026 TrinaxCode. Binarios empaquetados GPL-2.0 (incluyen pyvirtualcam).

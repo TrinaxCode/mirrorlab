@@ -9,8 +9,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.2.0] - 2026-11-02
+
 ### Added
 
+- **MirrorLab desktop app for Windows, macOS and Linux** (`mirrorlab desktop`, `mirrorlab-studio`):
+  a window with a live preview and every control (camera, background, framing, light, gestures,
+  privacy shutter, reactions, snapshots, virtual-camera output), in Spanish and English, with
+  preferences remembered between runs. It is built on Tkinter, so it adds no GUI dependency.
+- **Installers**, built by `.github/workflows/release.yml` on every `v*` tag: a `.deb` and a
+  `.tar.gz` for Linux, a setup `.exe` and a portable `.zip` for Windows, and a `.dmg` for macOS
+  (Apple silicon, ad-hoc signed, not notarised), with a `SHA256SUMS.txt`. Each build runs a
+  self-test of the packaged app and a GUI smoke test before it is published.
+- `mirrorlab desktop --self-test FILE`, a machine-readable check of the frozen app.
+- `StudioSession` accepts a `frame_callback`, which the desktop app uses to show the preview.
+- Web: a **Download** section (platform detection, checksums link, GPL note), a **FAQ**, and a
+  screenshot of the desktop app.
+- Web: SEO. Per-language `<title>`, description, canonical, `hreflang`, Open Graph and Twitter
+  cards, JSON-LD (`SoftwareApplication`, `WebSite`, `Person`, `FAQPage`), a `<noscript>` summary,
+  `sitemap.xml`, `llms.txt`, `humans.txt`, `security.txt`, a web manifest and icons. Spanish
+  lives at `/` and English at `/en/`.
+- Web: opt-in Firebase Analytics. It is off until the visitor accepts, loads only after that,
+  and honours Do Not Track and Global Privacy Control.
+- Media for the repository: screenshots and an animated GIF of the desktop app in both
+  languages, recorded by `scripts/media/record_desktop.py` from a drawn scene (no real faces).
 - Web: a snapshot tray. Snapshots taken with a gesture are kept in the page until you press
   Download.
 
@@ -25,7 +47,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Web: the hero animation no longer re-rasterises its blurred background on every frame. Lighthouse
   (mobile profile): performance 68 to 96, total blocking time 1.9 s to 170 ms, accessibility 100,
   SEO 100.
-- The deploy workflow skips with a notice when the Vercel secrets are not set, instead of failing.
+- **The website moved from Vercel to Firebase Hosting** (<https://mirrorlabapp.web.app>), with
+  security headers (CSP, HSTS, `Permissions-Policy`) set in `firebase.json`. The deploy workflow
+  skips with a notice when `FIREBASE_SERVICE_ACCOUNT` is not set, instead of failing.
+- The packaged binaries bundle `pyvirtualcam` (GPL-2.0), so the downloads are distributed under
+  GPL-2.0. The source code in the repository is still MIT.
 - Web: the landing page was redesigned around the virtual camera (animated hero, features,
   gesture hold times, install steps for Linux, macOS and Windows, a privacy summary), with a
   light and a dark theme and a single self-hosted font.
@@ -240,7 +266,8 @@ The original prototype (removed from the tree in 2.1.0; see the git history).
 - A `config.json` with the image directory, display size and confidence thresholds.
 - Spanish-language documentation, example images and setup scripts.
 
-[Unreleased]: https://github.com/TrinaxCode/mirrorlab/compare/v2.1.0...HEAD
+[Unreleased]: https://github.com/TrinaxCode/mirrorlab/compare/v2.2.0...HEAD
+[2.2.0]: https://github.com/TrinaxCode/mirrorlab/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/TrinaxCode/mirrorlab/releases/tag/v2.1.0
 [2.0.0]: https://github.com/TrinaxCode/mirrorlab/releases/tag/v2.0.0
 [1.0.0]: https://github.com/TrinaxCode/mirrorlab/releases/tag/v1.0.0
