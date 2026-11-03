@@ -130,7 +130,7 @@ jobs:
 
       # Build provenance: lets anyone check with `gh attestation verify` that a file was
       # produced by this workflow from this commit.
-      - uses: actions/attest-build-provenance@v2
+      - uses: actions/attest-build-provenance@v4
         with:
           subject-path: release/*
 
