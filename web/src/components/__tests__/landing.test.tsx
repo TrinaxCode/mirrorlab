@@ -12,6 +12,8 @@ import { GestureGuide } from "../GestureGuide";
 import { Control } from "../Control";
 import { Download } from "../Download";
 import { Faq } from "../Faq";
+import { Hero } from "../Hero";
+import { Features } from "../Features";
 import { Footer } from "../Footer";
 import { Install } from "../Install";
 import { ShortcutsTable } from "../ShortcutsTable";
@@ -199,6 +201,44 @@ describe("Footer", () => {
       expect(screen.getByText(en.footer.stats.refused)).toBeInTheDocument();
     } finally {
       Reflect.deleteProperty(window.navigator, "doNotTrack");
+    }
+  });
+});
+
+describe("Hero", () => {
+  it("pins a gesture on the picture and returns to the loop when pressed again", async () => {
+    const { container } = render(<Hero strings={en} />);
+    const figure = container.querySelector("figure");
+    expect(figure).toHaveAttribute("data-mode", "auto");
+
+    const palm = screen.getByRole("button", { name: new RegExp(en.hero.try.palm) });
+    expect(palm).toHaveAttribute("aria-pressed", "false");
+
+    await userEvent.click(palm);
+    expect(palm).toHaveAttribute("aria-pressed", "true");
+    expect(figure).toHaveAttribute("data-mode", "covered");
+    expect(screen.getByText(en.hero.try.hint)).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole("button", { name: new RegExp(en.hero.try.heart) }));
+    expect(figure).toHaveAttribute("data-mode", "heart");
+    expect(palm).toHaveAttribute("aria-pressed", "false");
+
+    await userEvent.click(screen.getByRole("button", { name: new RegExp(en.hero.try.heart) }));
+    expect(figure).toHaveAttribute("data-mode", "auto");
+  });
+
+  it("offers the same gestures in Spanish", () => {
+    render(<Hero strings={es} />);
+    expect(screen.getByRole("button", { name: new RegExp(es.hero.try.thumb) })).toBeInTheDocument();
+  });
+});
+
+describe("Features", () => {
+  it("shows one tile per adjustment with its description", () => {
+    render(<Features strings={en} />);
+    for (const item of en.features.items) {
+      expect(screen.getByRole("heading", { name: item.name })).toBeInTheDocument();
+      expect(screen.getByText(item.body)).toBeInTheDocument();
     }
   });
 });

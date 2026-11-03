@@ -12,7 +12,7 @@ export function Footer({ strings }: FooterProps) {
   const stats = useAnalyticsConsent();
 
   return (
-    <footer className="border-t border-line px-4 py-14 sm:px-6">
+    <footer className="tone-stage border-t border-line px-4 py-14 sm:px-6">
       <div className="mx-auto flex max-w-6xl flex-col gap-10 sm:flex-row sm:items-start sm:justify-between">
         <div className="max-w-md">
           <div className="flex items-center gap-2.5">

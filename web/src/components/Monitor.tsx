@@ -37,15 +37,19 @@ function path(indices: readonly number[]): string {
     .join(" ");
 }
 
+/** What the picture shows: the 12 s loop, or one state a visitor pinned with a chip. */
+export type MonitorMode = "auto" | "covered" | "heart" | "thumb";
+
 export interface MonitorProps {
   strings: Dict;
+  mode?: MonitorMode;
 }
 
-export function Monitor({ strings }: MonitorProps) {
+export function Monitor({ strings, mode = "auto" }: MonitorProps) {
   const copy = strings.hero.monitor;
 
   return (
-    <figure className="m-0">
+    <figure className="m-0" data-mode={mode}>
       <div className="bezel">
         <div className="glass">
           <svg
@@ -151,6 +155,22 @@ export function Monitor({ strings }: MonitorProps) {
                 </g>
               </g>
 
+              {/* Reactions float over the picture for the other people on the call. */}
+              <g transform="translate(468 232)">
+                <g className="mon-react mon-react--heart">
+                  <text textAnchor="middle" fontSize="72">
+                    ❤️
+                  </text>
+                </g>
+              </g>
+              <g transform="translate(468 232)">
+                <g className="mon-react mon-react--thumb">
+                  <text textAnchor="middle" fontSize="72">
+                    👍
+                  </text>
+                </g>
+              </g>
+
               {/* The shutter. */}
               <g className="mon-shutter">
                 <rect width="640" height="360" fill="#0c0e10" />
@@ -197,7 +217,6 @@ export function Monitor({ strings }: MonitorProps) {
           </svg>
         </div>
       </div>
-      <figcaption className="mt-4 text-sm text-ink-soft measure">{strings.hero.caption}</figcaption>
     </figure>
   );
 }

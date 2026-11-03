@@ -52,6 +52,13 @@ const es = {
     copy: "Copiar",
     copied: "Copiado",
     caption: "Mantén la palma 1,6 segundos para cubrir la cámara. Otra vez para abrirla.",
+    try: {
+      label: "Prueba un gesto sobre la imagen",
+      hint: "Pulsa otra vez para volver a la animación.",
+      palm: "Palma abierta",
+      heart: "Te quiero",
+      thumb: "Pulgar arriba",
+    },
     monitor: {
       label: "Vista previa animada de MirrorLab: fondo desenfocado, encuadre y una palma que cubre la cámara",
       live: "En vivo",
@@ -460,6 +467,13 @@ const en: Dict = {
     copy: "Copy",
     copied: "Copied",
     caption: "Hold your palm for 1.6 seconds to cover the camera. Again to open it.",
+    try: {
+      label: "Try a gesture on the picture",
+      hint: "Press it again to go back to the animation.",
+      palm: "Open palm",
+      heart: "I love you",
+      thumb: "Thumbs up",
+    },
     monitor: {
       label: "Animated MirrorLab preview: blurred background, framing and a palm covering the camera",
       live: "Live",

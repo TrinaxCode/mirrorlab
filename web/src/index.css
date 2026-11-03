@@ -5,37 +5,56 @@
 /* ---------------------------------------------------------------------------
    Design tokens.
 
-   The page is a studio desk: a pale monitor-bezel grey for the page, near-black
-   "screens" for everything that shows a picture, and one accent, the red of a
-   camera's tally light. Screens stay dark in both themes; only the desk flips.
+   The page alternates two rooms. The "desk" is a cool studio grey for reading;
+   the "stage" is the dark control room where pictures live. Two accents with
+   one job each: the tally red means "this is on" (live dot, the download
+   button), the lens blue means "this is where you can act" (focus, selection,
+   brackets). Screens stay dark in both themes; the desk flips.
 --------------------------------------------------------------------------- */
 :root {
-  --paper: #edefea;
-  --paper-deep: #e1e4dd;
-  --ink: #0f1214;
-  --ink-soft: #4b535a;
-  --line: #c8cdc5;
-  --tally: #d93a17;
+  --paper: #eef1f6;
+  --paper-deep: #e2e7ef;
+  --ink: #0a1020;
+  --ink-soft: #4a566b;
+  --line: #ccd4e0;
+  --tally: #e8341c;
   --on-tally: #ffffff;
+  --lens: #2f4bff;
 
-  --screen: #0c0e10;
-  --screen-raised: #15191c;
-  --screen-line: #272d32;
-  --screen-ink: #e8ebe6;
-  --screen-soft: #8e979e;
+  --screen: #070b16;
+  --screen-raised: #111830;
+  --screen-line: #252d47;
+  --screen-ink: #e9edf8;
+  --screen-soft: #8f9ab5;
   --signal: #86efc0;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --paper: #0f1214;
-    --paper-deep: #161a1d;
-    --ink: #eceee9;
-    --ink-soft: #9ba4ab;
-    --line: #2a3036;
-    --tally: #ff5b38;
-    --on-tally: #0f1214;
+    --paper: #0a0f1d;
+    --paper-deep: #11182b;
+    --ink: #e9edf8;
+    --ink-soft: #99a4bd;
+    --line: #232b44;
+    --tally: #ff5a3d;
+    --on-tally: #0a0f1d;
+    --lens: #7f93ff;
   }
+}
+
+/* The stage: any section that carries this class reads as the dark room, in
+   both themes, because the tokens it uses are re-pointed at the screen set. */
+.tone-stage {
+  --paper: var(--screen);
+  --paper-deep: var(--screen-raised);
+  --ink: var(--screen-ink);
+  --ink-soft: var(--screen-soft);
+  --line: var(--screen-line);
+  --tally: #ff5a3d;
+  --on-tally: #0a0f1d;
+  --lens: #8fa0ff;
+  background-color: var(--screen);
+  color: var(--screen-ink);
 }
 
 @theme inline {
@@ -45,6 +64,7 @@
   --color-ink-soft: var(--ink-soft);
   --color-line: var(--line);
   --color-tally: var(--tally);
+  --color-lens: var(--lens);
   --color-on-tally: var(--on-tally);
   --color-screen: var(--screen);
   --color-screen-raised: var(--screen-raised);
@@ -79,7 +99,7 @@
   }
 
   :focus-visible {
-    outline: 2px solid var(--tally);
+    outline: 2px solid var(--lens);
     outline-offset: 3px;
     border-radius: 4px;
   }
@@ -217,6 +237,68 @@
 
   .animate-in {
     animation: ml-in 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  /* Faint registration marks and a fine grid, like a monitor's safe-area overlay. */
+  .stage-grid {
+    background-image:
+      linear-gradient(to right, color-mix(in oklab, var(--screen-ink) 5%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in oklab, var(--screen-ink) 5%, transparent) 1px, transparent 1px);
+    background-size: 56px 56px;
+    background-position: center top;
+    mask-image: radial-gradient(ellipse 80% 70% at 50% 35%, #000 30%, transparent 100%);
+  }
+
+  /* Viewfinder corner brackets around a frame. Decoration only. */
+  .brackets {
+    --b: 14px;
+    --w: 2px;
+    position: relative;
+  }
+  .brackets::before,
+  .brackets::after {
+    content: "";
+    position: absolute;
+    inset: -10px;
+    pointer-events: none;
+    background:
+      linear-gradient(var(--lens), var(--lens)) top left / var(--b) var(--w) no-repeat,
+      linear-gradient(var(--lens), var(--lens)) top left / var(--w) var(--b) no-repeat,
+      linear-gradient(var(--lens), var(--lens)) top right / var(--b) var(--w) no-repeat,
+      linear-gradient(var(--lens), var(--lens)) top right / var(--w) var(--b) no-repeat;
+  }
+  .brackets::after {
+    background:
+      linear-gradient(var(--lens), var(--lens)) bottom left / var(--b) var(--w) no-repeat,
+      linear-gradient(var(--lens), var(--lens)) bottom left / var(--w) var(--b) no-repeat,
+      linear-gradient(var(--lens), var(--lens)) bottom right / var(--b) var(--w) no-repeat,
+      linear-gradient(var(--lens), var(--lens)) bottom right / var(--w) var(--b) no-repeat;
+  }
+
+  /* A gesture chip: the control you press to see the product react. */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    padding: 0 1rem;
+    border: 1px solid var(--screen-line);
+    border-radius: 999px;
+    background: var(--screen-raised);
+    color: var(--screen-ink);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    transition:
+      border-color 160ms,
+      background-color 160ms,
+      transform 160ms;
+  }
+  .chip:hover {
+    border-color: var(--lens);
+  }
+  .chip[aria-pressed="true"] {
+    border-color: var(--lens);
+    background: color-mix(in oklab, var(--lens) 22%, var(--screen-raised));
   }
 }
 
@@ -375,7 +457,88 @@
   }
 }
 
+/* Manual modes: when a visitor presses a gesture chip the loop stops and the
+   picture shows that one state until they press it again. */
+.mon-react {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+[data-mode="covered"] .mon-hand,
+[data-mode="covered"] .mon-ring,
+[data-mode="heart"] .mon-hand,
+[data-mode="heart"] .mon-ring,
+[data-mode="thumb"] .mon-hand,
+[data-mode="thumb"] .mon-ring,
+[data-mode="live"] .mon-hand,
+[data-mode="live"] .mon-ring {
+  animation: none;
+  opacity: 0;
+}
+
+[data-mode="palm"] .mon-hand,
+[data-mode="palm"] .mon-ring {
+  animation: none;
+  opacity: 1;
+  transform: rotate(-90deg);
+}
+[data-mode="palm"] .mon-hand {
+  transform: none;
+}
+
+[data-mode]:not([data-mode="auto"]) .mon-shutter,
+[data-mode]:not([data-mode="auto"]) .mon-live,
+[data-mode]:not([data-mode="auto"]) .mon-covered {
+  animation: none;
+}
+[data-mode="covered"] .mon-shutter {
+  opacity: 1;
+}
+[data-mode="covered"] .mon-live {
+  opacity: 0;
+}
+[data-mode="covered"] .mon-covered {
+  opacity: 1;
+}
+[data-mode]:not([data-mode="covered"]):not([data-mode="auto"]) .mon-shutter {
+  opacity: 0;
+}
+[data-mode]:not([data-mode="covered"]):not([data-mode="auto"]) .mon-live {
+  opacity: 1;
+}
+[data-mode]:not([data-mode="covered"]):not([data-mode="auto"]) .mon-covered {
+  opacity: 0;
+}
+
+[data-mode="heart"] .mon-react--heart,
+[data-mode="thumb"] .mon-react--thumb {
+  animation: mon-float 2.6s ease-out infinite;
+}
+
+@keyframes mon-float {
+  0% {
+    opacity: 0;
+    transform: translateY(40px) scale(0.6);
+  }
+  15% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-70px) scale(1.15);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  [data-mode="heart"] .mon-react--heart,
+  [data-mode="thumb"] .mon-react--thumb {
+    animation: none;
+    opacity: 1;
+  }
   .mon-ring,
   .mon-hand,
   .mon-shutter,
@@ -389,4 +552,37 @@
   .mon-covered {
     opacity: 0;
   }
+}
+
+/* Feature art: a slow push in on the face, then back out. */
+.art-zoom {
+  transform-box: view-box;
+  transform-origin: 320px 170px;
+  animation: art-zoom 9s ease-in-out infinite;
+}
+
+@keyframes art-zoom {
+  0%,
+  15% {
+    transform: scale(1);
+  }
+  45%,
+  70% {
+    transform: scale(1.35);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .art-zoom {
+    animation: none;
+  }
+}
+
+.tone-stage .bezel {
+  box-shadow:
+    0 0 0 1px var(--screen-line),
+    0 40px 90px -40px color-mix(in oklab, var(--lens) 55%, transparent);
 }

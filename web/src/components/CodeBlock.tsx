@@ -47,7 +47,7 @@ export function CodeBlock({ code, copyLabel, copiedLabel, className = "" }: Code
   };
 
   return (
-    <div className={`flex items-start gap-3 rounded-2xl bg-screen px-4 py-3.5 text-screen-ink ${className}`}>
+    <div className={`flex items-start gap-3 rounded-2xl border border-screen-line bg-screen px-4 py-3.5 text-screen-ink ${className}`}>
       <pre className="no-scrollbar min-w-0 flex-1 overflow-x-auto font-[inherit] text-[0.9rem] leading-relaxed">
         <code className="font-[inherit]">{code}</code>
       </pre>

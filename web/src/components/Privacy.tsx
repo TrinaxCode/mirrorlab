@@ -8,7 +8,7 @@ export interface PrivacyProps {
 export function Privacy({ strings }: PrivacyProps) {
   const { privacy } = strings;
   return (
-    <Section id="privacy" title={privacy.title} subtitle={privacy.subtitle}>
+    <Section id="privacy" title={privacy.title} subtitle={privacy.subtitle} className="tone-stage">
       <ul className="grid gap-x-10 gap-y-8 sm:grid-cols-2">
         {privacy.facts.map((fact) => (
           <li key={fact.title} className="border-t border-ink pt-4">
