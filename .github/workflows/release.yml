@@ -30,6 +30,10 @@ jobs:
     name: Build · ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
+    permissions:
+      contents: read
+      id-token: write       # sign the build provenance with the workflow's identity
+      attestations: write
     strategy:
       fail-fast: false
       matrix:
@@ -123,6 +127,12 @@ jobs:
           cp dist/*.tar.gz dist/*.deb dist/*.dmg dist/*.exe dist/*.zip release/ 2>/dev/null || true
           ls -la release
           test -n "$(ls -A release)"
+
+      # Build provenance: lets anyone check with `gh attestation verify` that a file was
+      # produced by this workflow from this commit.
+      - uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: release/*
 
       - uses: actions/upload-artifact@v4
         with:

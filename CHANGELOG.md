@@ -9,6 +9,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Web: the hero is now a dark "stage" with a call tile you can drive: press *Open palm*, *I love
+  you* or *Thumbs up* and the picture reacts, press again to return to the animation.
+- Web: the features are a bento of five drawn screens (background, framing, light, shutter,
+  reactions) instead of a text list.
+- Community files: `GOVERNANCE.md`, `SUPPORT.md`, `.github/CODEOWNERS`, Dependabot for pip, npm and
+  Actions, `.editorconfig`, decision records in `docs/adr/`, `docs/RELEASING.md` and
+  `docs/TRANSLATING.md`, plus contribution licence terms and desktop/web guidance in
+  `CONTRIBUTING.md`.
+- Release builds publish build provenance (`gh attestation verify`).
+
+### Changed
+
+- Web: a cool studio palette with two accents, tally red for "on" and lens blue for "act", and
+  alternating light and dark sections.
+- GitHub Discussions are enabled and the repository homepage points to the Firebase site.
+
 ## [2.2.0] - 2026-11-02
 
 ### Added

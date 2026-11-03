@@ -287,6 +287,21 @@ src/mirrorlab/
 Consulta [ROADMAP.md](ROADMAP.md): qué está hecho, qué sigue (publicación en PyPI, una prueba
 de integración real con `v4l2loopback`, gestos calibrados) y qué no está planeado a propósito.
 
+## Comunidad
+
+MirrorLab es de código abierto de verdad: el código es MIT, el desarrollo es público y las
+decisiones quedan por escrito.
+
+- **Contribuir:** [CONTRIBUTING.md](CONTRIBUTING.md) explica la configuración, las pruebas y la lista
+  de revisión de los pull requests; los
+  [good first issues](https://github.com/TrinaxCode/mirrorlab/labels/good%20first%20issue) son un buen
+  comienzo. Se agradecen las correcciones de texto y las traducciones ([docs/TRANSLATING.md](docs/TRANSLATING.md)).
+- **Preguntar o mostrar lo que hiciste:** [Discussions](https://github.com/TrinaxCode/mirrorlab/discussions). Más en [SUPPORT.md](SUPPORT.md).
+- **Cómo se toman las decisiones:** [GOVERNANCE.md](GOVERNANCE.md) y los [registros de decisión](docs/adr/).
+- **Confía en la descarga:** cada versión publica `SHA256SUMS.txt` y la procedencia de la compilación
+  (`gh attestation verify <archivo> --repo TrinaxCode/mirrorlab`); ver [docs/RELEASING.md](docs/RELEASING.md).
+- **Seguridad:** informa en privado según [SECURITY.md](SECURITY.md).
+
 ## Créditos y licencias
 
 El código de MirrorLab es **MIT**. Está construido sobre [MediaPipe](https://ai.google.dev/edge/mediapipe)

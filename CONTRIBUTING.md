@@ -301,6 +301,33 @@ A maintainer will look for, in this order:
 
 ---
 
+## The desktop app, the website and translations
+
+- **Desktop app** (`src/mirrorlab/desktop/`): the window never touches the camera or the
+  pipeline directly; it sends the same actions as `mirrorlab ctl` through `StudioRunner`. Run it
+  with `mirrorlab desktop --synthetic --output none` to work without a camera, and keep the logic
+  you add testable without a display (see `tests/test_desktop.py`). Packaging is described in
+  [packaging/README.md](packaging/README.md) and [docs/DESKTOP.md](docs/DESKTOP.md).
+- **Website** (`web/`): `npm install`, then `npm run dev`. Before a pull request run
+  `npm run lint && npm run typecheck && npm test && npm run build` in `web/`. Both languages
+  must stay in step, and anything interactive needs a keyboard path and respect for
+  `prefers-reduced-motion`.
+- **Translations**: see [docs/TRANSLATING.md](docs/TRANSLATING.md). Wording fixes are among the
+  friendliest first contributions; a new language is a real change, so open an issue first.
+- **Decisions** that change a promise to users (privacy, the licence boundary, packaging) are
+  written up in [docs/adr/](docs/adr/) and discussed before the code. See [GOVERNANCE.md](GOVERNANCE.md).
+
+## Licence of contributions
+
+MirrorLab uses the "inbound = outbound" rule: by opening a pull request you agree that your
+contribution is licensed under the project's licence (MIT), and you confirm that you wrote it or
+have the right to submit it. There is no contributor licence agreement to sign. Add a
+`Signed-off-by:` line (`git commit -s`) if you like; it is welcome but not required.
+
+Do not add code under a licence that is incompatible with MIT, and do not copy code from
+GPL or proprietary projects. A new dependency must have a permissive licence and be listed in
+[THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md).
+
 ## Good first issues
 
 New here? Look for issues labelled **`good first issue`** — they are scoped to be
